@@ -1,0 +1,23 @@
+[package]
+name = "aoc2015"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+arrayvec.workspace = true
+itertools.workspace = true
+md5.workspace = true
+num.workspace = true
+panic-message.workspace = true
+rustc-hash.workspace = true
+
+harness.workspace = true
+utils.workspace = true
+
+[lints]
+workspace = true
+
+[[bench]]
+name = "bench"
+harness = false

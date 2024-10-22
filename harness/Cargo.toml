@@ -1,0 +1,17 @@
+[package]
+name = "harness"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+clap.workspace = true
+concat-idents.workspace = true
+directories.workspace = true
+divan.workspace = true
+once_cell.workspace = true
+owo-colors.workspace = true
+reqwest.workspace = true
+
+[lints]
+workspace = true
