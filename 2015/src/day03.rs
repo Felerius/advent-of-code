@@ -1,10 +1,10 @@
 use anyhow::{bail, Result};
-use rustc_hash::FxHashSet;
+use utils::hash::FastHashSet;
 
 pub fn run(input: &str) -> Result<(usize, usize)> {
     let mut pos1 = (0, 0);
     let mut pos2 = [(0, 0), (0, 0)];
-    let mut part1 = FxHashSet::from_iter([(0, 0)]);
+    let mut part1 = FastHashSet::from_iter([(0, 0)]);
     let mut part2 = part1.clone();
     for c in input.bytes() {
         pos1 = apply_move(pos1, c)?;

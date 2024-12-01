@@ -2,8 +2,7 @@ use std::{cmp::Reverse, collections::BinaryHeap};
 
 use anyhow::Result;
 use arrayvec::ArrayVec;
-use rustc_hash::FxHashMap;
-use utils::input;
+use utils::{hash::FastHashMap, input};
 
 pub fn run(input: &str) -> Result<(u16, u16)> {
     let [boss_hp, boss_dmg] = input::integers(input);
@@ -22,7 +21,7 @@ fn solve(boss_hp: u8, boss_dmg: u8, hp_drain: u8) -> u16 {
         recharge_turns: 0,
     };
     let mut queue = BinaryHeap::from_iter([(Reverse(0), initial)]);
-    let mut seen = FxHashMap::from_iter([(initial, 0)]);
+    let mut seen = FastHashMap::from_iter([(initial, 0)]);
     let mut upper_bound = u16::MAX;
     while let Some((Reverse(mana_spent), mut state)) = queue.pop() {
         if mana_spent >= upper_bound {

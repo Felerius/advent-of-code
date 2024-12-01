@@ -2,16 +2,16 @@ use std::iter;
 
 use anyhow::{Context, Result};
 use itertools::Itertools;
-use rustc_hash::{FxHashMap, FxHashSet};
+use utils::hash::{FastHashCollectionExt, FastHashMap, FastHashSet};
 
 pub fn run(input: &str) -> Result<(usize, usize)> {
     let mut lines = input.lines();
     let input = lines.next_back().context("empty input")?;
     let mut cnf = ChomskyNormalForm {
         rules: Vec::new(),
-        names: FxHashMap::default(),
+        names: FastHashMap::new(),
     };
-    let mut part1 = FxHashSet::default();
+    let mut part1 = FastHashSet::new();
     while let Some(line) = lines.next() {
         if line.is_empty() {
             break;
@@ -75,7 +75,7 @@ pub fn run(input: &str) -> Result<(usize, usize)> {
 
 struct ChomskyNormalForm<'a> {
     rules: Vec<Vec<(usize, usize, bool)>>,
-    names: FxHashMap<&'a [u8], usize>,
+    names: FastHashMap<&'a [u8], usize>,
 }
 
 impl<'a> ChomskyNormalForm<'a> {

@@ -35,7 +35,7 @@ fn run_fallible(year: usize, solutions: SolutionList) -> Result<()> {
 
 pub fn run(year: usize, solutions: SolutionList) {
     if let Err(err) = run_fallible(year, solutions) {
-        eprintln!("{}", err);
+        eprintln!("{:?}", err);
         process::exit(1);
     }
 }

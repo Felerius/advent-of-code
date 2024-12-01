@@ -1,6 +1,5 @@
-use std::iter;
-
 use anyhow::{Context, Result};
+use utils::num::bits;
 
 pub fn run(input: &str) -> Result<(u32, u32)> {
     let mut adj = [[0; 8]; 8];
@@ -48,16 +47,6 @@ pub fn run(input: &str) -> Result<(u32, u32)> {
             (part1.min(mn), part2.max(mx))
         });
     Ok(solution)
-}
-
-fn bits(mut m: usize) -> impl Iterator<Item = usize> {
-    iter::from_fn(move || {
-        (m != 0).then(|| {
-            let c = m.trailing_zeros() as usize;
-            m ^= 1 << c;
-            c
-        })
-    })
 }
 
 #[cfg(test)]

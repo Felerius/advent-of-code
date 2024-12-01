@@ -1,8 +1,7 @@
-use std::iter;
-
 use anyhow::{Context, Result};
 use arrayvec::ArrayVec;
 use itertools::Itertools;
+use utils::num::bits;
 
 const MAX: usize = 8;
 
@@ -73,16 +72,6 @@ fn parse<'a>(input: &'a str) -> Result<(usize, [[i32; MAX]; MAX])> {
     }
 
     Ok((names.len(), matrix))
-}
-
-fn bits(mut m: usize) -> impl Iterator<Item = usize> {
-    iter::from_fn(move || {
-        (m != 0).then(|| {
-            let c = m.trailing_zeros() as usize;
-            m ^= 1 << c;
-            c
-        })
-    })
 }
 
 #[cfg(test)]

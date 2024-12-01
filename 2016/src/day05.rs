@@ -1,5 +1,9 @@
 use std::{
-    sync::atomic::{AtomicBool, AtomicUsize, Ordering},
+    collections::BinaryHeap,
+    sync::{
+        atomic::{AtomicBool, AtomicUsize, Ordering},
+        Mutex,
+    },
     thread,
 };
 
@@ -9,7 +13,7 @@ use utils::md5;
 
 const BLOCK_SIZE: usize = 1000;
 
-pub fn run(input: &str) -> Result<(usize, usize)> {
+pub fn run(input: &str) -> Result<(String, String)> {
     let state = State::new();
     for num in 1..BLOCK_SIZE {
         let bytes = prepare_bytes(input, num);
@@ -27,10 +31,16 @@ pub fn run(input: &str) -> Result<(usize, usize)> {
         })
     })?;
 
-    Ok((
-        state.part1.load(Ordering::SeqCst),
-        state.part2.load(Ordering::SeqCst),
-    ))
+    let solution = state.solution.into_inner().unwrap();
+    let part1_digits = solution.part1.into_sorted_vec().into_iter().map(|(_, d)| d);
+    let part2_digits = solution.part2.map(|(_, d)| d);
+
+    Ok((to_hex_str(part1_digits), to_hex_str(part2_digits)))
+}
+
+fn to_hex_str(digits: impl IntoIterator<Item = u8>) -> String {
+    let num = digits.into_iter().fold(0_u32, |x, d| x << 4 | u32::from(d));
+    format!("{:08x}", num)
 }
 
 fn prepare_bytes(input: &str, mut num: usize) -> [u8; 64] {
@@ -56,9 +66,7 @@ fn search_thread(input: &str, state: &State) {
         let mut bytes = prepare_bytes(input, block_start);
         for num in block_start..block_end {
             debug_assert_eq!(bytes, prepare_bytes(input, num));
-            if state.consume(num, &bytes) {
-                break;
-            }
+            state.consume(num, &bytes);
 
             for i in (input.len()..input.len() + num_digits).rev() {
                 if bytes[i] == b'9' {
@@ -73,35 +81,55 @@ fn search_thread(input: &str, state: &State) {
 }
 
 struct State {
-    part1: AtomicUsize,
-    part2: AtomicUsize,
     stop: AtomicBool,
     next_block: AtomicUsize,
+    solution: Mutex<Solution>,
 }
 
 impl State {
     fn new() -> Self {
         Self {
-            part1: AtomicUsize::new(usize::MAX),
-            part2: AtomicUsize::new(usize::MAX),
             stop: AtomicBool::new(false),
             next_block: AtomicUsize::new(BLOCK_SIZE),
+            solution: Mutex::new(Solution {
+                part1: BinaryHeap::with_capacity(9),
+                part2: [(usize::MAX, u8::MAX); 8],
+                part2_cnt: 0,
+            }),
         }
     }
 
-    fn consume(&self, num: usize, bytes: &[u8; 64]) -> bool {
+    fn consume(&self, num: usize, bytes: &[u8; 64]) {
         let digest = md5::hash(bytes);
         if digest[0] & 0xFF_FF_F0_00 == 0 {
-            self.part1.fetch_min(num, Ordering::SeqCst);
-            if digest[0] & 0xFF_FF_FF_00 == 0 {
-                self.part2.fetch_min(num, Ordering::SeqCst);
-                self.stop.store(true, Ordering::Relaxed);
-                return true;
+            let mut solution = self.solution.lock().unwrap();
+            let digit6 = (digest[0] >> 8 & 0xF) as u8;
+            let digit7 = (digest[0] >> 4 & 0xF) as u8;
+
+            solution.part1.push((num, digit6));
+            if solution.part1.len() == 9 {
+                solution.part1.pop();
+            }
+
+            if digit6 < 8 {
+                let lowest = &mut solution.part2[usize::from(digit6)];
+                let new_char = lowest.0 == usize::MAX;
+                *lowest = (*lowest).min((num, digit7));
+                if new_char {
+                    solution.part2_cnt += 1;
+                    if solution.part2_cnt == 8 {
+                        self.stop.store(true, Ordering::Relaxed);
+                    }
+                }
             }
         }
-
-        false
     }
+}
+
+struct Solution {
+    part1: BinaryHeap<(usize, u8)>,
+    part2: [(usize, u8); 8],
+    part2_cnt: u8,
 }
 
 #[cfg(test)]
@@ -109,9 +137,9 @@ mod tests {
     use super::*;
 
     #[test]
-    fn part1() -> Result<()> {
-        assert_eq!(run("abcdef")?.0, 609043);
-        assert_eq!(run("pqrstuv")?.0, 1048970);
-        Ok(())
+    fn test() {
+        let (part1, part2) = run("abc").unwrap();
+        assert_eq!(part1, "18f47a30");
+        assert_eq!(part2, "05ace8e3");
     }
 }
