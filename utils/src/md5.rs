@@ -36,6 +36,68 @@ impl DerefMut for SingleBlock {
     }
 }
 
+#[derive(Debug, Clone)]
+pub struct Stack {
+    bytes: Vec<u8>,
+    prefix_digests: Vec<Digest>,
+}
+
+impl Stack {
+    pub fn new() -> Self {
+        Self {
+            bytes: Vec::new(),
+            prefix_digests: Vec::new(),
+        }
+    }
+
+    pub fn bytes(&self) -> &[u8] {
+        &self.bytes
+    }
+
+    pub fn push(&mut self, byte: u8) {
+        self.bytes.push(byte);
+        if self.bytes.len() % 64 == 0 {
+            let digest = self.prefix_digests.last().copied().unwrap_or(INIT);
+            let digest = hash_block(self.bytes.last_chunk().unwrap(), digest);
+            self.prefix_digests.push(digest);
+        }
+    }
+
+    pub fn push_slice(&mut self, bytes: &[u8]) {
+        for &byte in bytes {
+            self.push(byte);
+        }
+    }
+
+    pub fn pop(&mut self) {
+        if self.bytes.len() % 64 == 0 {
+            self.prefix_digests.pop();
+        }
+        self.bytes.pop();
+    }
+
+    pub fn digest(&mut self) -> Digest {
+        let original_len = self.bytes.len();
+        self.bytes.push(0x80);
+        self.bytes
+            .resize((self.bytes.len() + 8).next_multiple_of(64), 0);
+        write_len(self.bytes.last_chunk_mut().unwrap(), original_len);
+
+        let mut digest = self.prefix_digests.last().copied().unwrap_or(INIT);
+        let start_block = self.prefix_digests.len() * 64;
+        digest = hash_block(self.bytes[start_block..].first_chunk().unwrap(), digest);
+        if self.bytes.len() > start_block + 64 {
+            digest = hash_block(
+                self.bytes[start_block + 64..].first_chunk().unwrap(),
+                digest,
+            );
+        }
+
+        self.bytes.truncate(original_len);
+        digest_to_be(digest)
+    }
+}
+
 const INIT: Digest = [0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476];
 const K: [u32; 64] = [
     0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee, 0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
@@ -140,8 +202,15 @@ fn common(f: u32, a: u32, b: u32, m: u32, s: u32, k: u32) -> u32 {
 mod tests {
     use super::*;
 
+    fn to_u128(digest: Digest) -> u128 {
+        u128::from(digest[0]) << 96
+            | u128::from(digest[1]) << 64
+            | u128::from(digest[2]) << 32
+            | u128::from(digest[3])
+    }
+
     #[test]
-    fn hash() {
+    fn single_block() {
         let cases = [
             ("", 0xd41d8cd98f00b204e9800998ecf8427e),
             ("abc", 0x900150983cd24fb0d6963f7d28e17f72),
@@ -149,13 +218,31 @@ mod tests {
         for (input, expected) in cases {
             let mut block = SingleBlock::new(input.len());
             block[..input.len()].copy_from_slice(input.as_bytes());
-            let [a, b, c, d] = block.digest();
-            let actual =
-                u128::from(a) << 96 | u128::from(b) << 64 | u128::from(c) << 32 | u128::from(d);
-            assert_eq!(
-                expected, actual,
-                "failed for {input:?}: [{a:08x}, {b:08x}, {c:08x}, {d:08x}]"
-            );
+            let actual = block.digest();
+            assert_eq!(expected, to_u128(actual), "failed for {input:?}");
         }
+    }
+
+    #[test]
+    fn stack() {
+        const A64: &[u8] = &[b'a'; 64];
+
+        let mut stack = Stack::new();
+        assert_eq!(0xd41d8cd98f00b204e9800998ecf8427e, to_u128(stack.digest()));
+
+        stack.push_slice(A64);
+        assert_eq!(0x014842d480b571495a4a0363793f7367, to_u128(stack.digest()));
+
+        stack.pop();
+        assert_eq!(0xb06521f39153d618550606be297466d5, to_u128(stack.digest()));
+
+        stack.push(b'a');
+        assert_eq!(0x014842d480b571495a4a0363793f7367, to_u128(stack.digest()));
+
+        stack.push(b'a');
+        assert_eq!(0xc743a45e0d2e6a95cb859adae0248435, to_u128(stack.digest()));
+
+        stack.push_slice(A64);
+        assert_eq!(0xb325dc1c6f5e7a2b7cf465b9feab7948, to_u128(stack.digest()));
     }
 }
