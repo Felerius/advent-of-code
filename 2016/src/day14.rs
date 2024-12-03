@@ -2,7 +2,7 @@ use std::{collections::VecDeque, sync::mpsc, thread};
 
 use anyhow::{anyhow, Result};
 use panic_message::panic_message;
-use utils::md5::{self, Digest};
+use utils::md5::{Digest, SingleBlock};
 
 pub fn run(input: &str) -> Result<(usize, usize)> {
     let mut searcher1 = Searcher::new();
@@ -11,9 +11,7 @@ pub fn run(input: &str) -> Result<(usize, usize)> {
             break;
         }
 
-        let bytes = bytes_for_num(input, n);
-        let digest = md5::hash(&bytes);
-        searcher1.consume(n, digest);
+        searcher1.consume(n, block_for_num(input, n).digest());
     }
 
     let mut searcher2 = Searcher::new();
@@ -56,40 +54,38 @@ pub fn run(input: &str) -> Result<(usize, usize)> {
     Ok((searcher1.into_ans(), searcher2.into_ans()))
 }
 
-fn bytes_for_num(input: &str, mut num: usize) -> [u8; 64] {
-    let mut bytes = [0; 64];
+fn block_for_num(input: &str, mut num: usize) -> SingleBlock {
     let digits = if num == 0 {
         1
     } else {
         num.ilog10() as usize + 1
     };
 
-    md5::prepare_for_len(&mut bytes, input.len() + digits);
-    bytes[..input.len()].copy_from_slice(input.as_bytes());
+    let mut block = SingleBlock::new(input.len() + digits);
+    block[..input.len()].copy_from_slice(input.as_bytes());
     for i in 0..digits {
-        bytes[input.len() + digits - 1 - i] = b'0' + (num % 10) as u8;
+        block[input.len() + digits - 1 - i] = b'0' + (num % 10) as u8;
         num /= 10;
     }
 
-    bytes
+    block
 }
 
 fn calc_stretched_hash(input: &str, n: usize) -> Digest {
-    let mut bytes = bytes_for_num(input, n);
-    let mut digest = md5::hash(&bytes);
+    let mut block = block_for_num(input, n);
+    let mut digest = block.digest();
 
-    bytes.fill(0);
-    md5::prepare_for_len(&mut bytes, 32);
+    block = SingleBlock::new(32);
     for _ in 0..2016 {
         for (i, byte) in digest_digits(digest).enumerate() {
-            bytes[i] = if byte < 10 {
+            block[i] = if byte < 10 {
                 b'0' + byte
             } else {
                 b'a' + byte - 10
             };
         }
 
-        digest = md5::hash(&bytes);
+        digest = block.digest();
     }
 
     digest

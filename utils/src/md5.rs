@@ -1,8 +1,42 @@
-use std::array;
+use std::{
+    array,
+    ops::{Deref, DerefMut},
+};
 
 pub type Digest = [u32; 4];
 
-const INIT: [u32; 4] = [0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476];
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct SingleBlock([u8; 64]);
+
+impl SingleBlock {
+    pub fn new(len: usize) -> Self {
+        assert!(len < 56);
+        let mut buffer = [0; 64];
+        buffer[len] = 0x80;
+        write_len(buffer.last_chunk_mut().unwrap(), len);
+        Self(buffer)
+    }
+
+    pub fn digest(&self) -> Digest {
+        digest_to_be(hash_block(&self.0, INIT))
+    }
+}
+
+impl Deref for SingleBlock {
+    type Target = [u8; 64];
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl DerefMut for SingleBlock {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+const INIT: Digest = [0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476];
 const K: [u32; 64] = [
     0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee, 0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
     0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be, 0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821,
@@ -42,14 +76,16 @@ macro_rules! round16 {
     };
 }
 
-pub fn prepare_for_len(buffer: &mut [u8; 64], len: usize) {
-    debug_assert!(len < 56);
-    buffer[len] = 0x80;
-    buffer[56..].copy_from_slice(&(len * 8).to_le_bytes());
+fn digest_to_be(digest: Digest) -> Digest {
+    digest.map(u32::to_be)
 }
 
-pub fn hash(buffer: &[u8; 64]) -> Digest {
-    let [mut a, mut b, mut c, mut d] = INIT;
+fn write_len(bytes: &mut [u8; 8], num_bytes: usize) {
+    *bytes = (num_bytes * 8).to_le_bytes();
+}
+
+fn hash_block(buffer: &[u8; 64], digest: Digest) -> Digest {
+    let [mut a, mut b, mut c, mut d] = digest;
     let m: [_; 16] = array::from_fn(|i| {
         u32::from_le_bytes([
             buffer[i * 4],
@@ -65,10 +101,10 @@ pub fn hash(buffer: &[u8; 64]) -> Digest {
     round16!(round4, 48, a, b, c, d, m, I, S, K);
 
     [
-        a.wrapping_add(INIT[0]).to_be(),
-        b.wrapping_add(INIT[1]).to_be(),
-        c.wrapping_add(INIT[2]).to_be(),
-        d.wrapping_add(INIT[3]).to_be(),
+        a.wrapping_add(digest[0]),
+        b.wrapping_add(digest[1]),
+        c.wrapping_add(digest[2]),
+        d.wrapping_add(digest[3]),
     ]
 }
 
@@ -111,10 +147,9 @@ mod tests {
             ("abc", 0x900150983cd24fb0d6963f7d28e17f72),
         ];
         for (input, expected) in cases {
-            let mut buffer = [0; 64];
-            prepare_for_len(&mut buffer, input.len());
-            buffer[..input.len()].copy_from_slice(input.as_bytes());
-            let [a, b, c, d] = super::hash(&buffer);
+            let mut block = SingleBlock::new(input.len());
+            block[..input.len()].copy_from_slice(input.as_bytes());
+            let [a, b, c, d] = block.digest();
             let actual =
                 u128::from(a) << 96 | u128::from(b) << 64 | u128::from(c) << 32 | u128::from(d);
             assert_eq!(

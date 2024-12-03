@@ -5,14 +5,14 @@ use std::{
 
 use anyhow::{anyhow, Result};
 use panic_message::panic_message;
-use utils::md5;
+use utils::md5::SingleBlock;
 
 const BLOCK_SIZE: usize = 1000;
 
 pub fn run(input: &str) -> Result<(usize, usize)> {
     let state = State::new();
     for num in 1..BLOCK_SIZE {
-        let bytes = prepare_bytes(input, num);
+        let bytes = prepare_block(input, num);
         state.consume(num, &bytes);
     }
 
@@ -33,17 +33,16 @@ pub fn run(input: &str) -> Result<(usize, usize)> {
     ))
 }
 
-fn prepare_bytes(input: &str, mut num: usize) -> [u8; 64] {
-    let mut bytes = [0; 64];
+fn prepare_block(input: &str, mut num: usize) -> SingleBlock {
     let digits = num.ilog10() as usize + 1;
-    md5::prepare_for_len(&mut bytes, input.len() + digits);
-    bytes[..input.len()].copy_from_slice(input.as_bytes());
+    let mut block = SingleBlock::new(input.len() + digits);
+    block[..input.len()].copy_from_slice(input.as_bytes());
     for i in 0..digits {
-        bytes[input.len() + digits - 1 - i] = b'0' + (num % 10) as u8;
+        block[input.len() + digits - 1 - i] = b'0' + (num % 10) as u8;
         num /= 10;
     }
 
-    bytes
+    block
 }
 
 fn search_thread(input: &str, state: &State) {
@@ -53,18 +52,18 @@ fn search_thread(input: &str, state: &State) {
         let num_digits = block_start.ilog10() as usize + 1;
         debug_assert_eq!(num_digits, (block_end - 1).ilog10() as usize + 1);
 
-        let mut bytes = prepare_bytes(input, block_start);
+        let mut block = prepare_block(input, block_start);
         for num in block_start..block_end {
-            debug_assert_eq!(bytes, prepare_bytes(input, num));
-            if state.consume(num, &bytes) {
+            debug_assert_eq!(block, prepare_block(input, num));
+            if state.consume(num, &block) {
                 break;
             }
 
             for i in (input.len()..input.len() + num_digits).rev() {
-                if bytes[i] == b'9' {
-                    bytes[i] = b'0';
+                if block[i] == b'9' {
+                    block[i] = b'0';
                 } else {
-                    bytes[i] += 1;
+                    block[i] += 1;
                     break;
                 }
             }
@@ -89,8 +88,8 @@ impl State {
         }
     }
 
-    fn consume(&self, num: usize, bytes: &[u8; 64]) -> bool {
-        let digest = md5::hash(bytes);
+    fn consume(&self, num: usize, block: &SingleBlock) -> bool {
+        let digest = block.digest();
         if digest[0] & 0xFF_FF_F0_00 == 0 {
             self.part1.fetch_min(num, Ordering::SeqCst);
             if digest[0] & 0xFF_FF_FF_00 == 0 {
