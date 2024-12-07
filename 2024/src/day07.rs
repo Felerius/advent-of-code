@@ -11,10 +11,10 @@ pub fn run(input: &str) -> Result<(u64, u64)> {
             let total: u64 = total.parse().expect("invalid total");
             let nums: Vec<_> = nums
                 .split(' ')
-                .map(|n| n.parse().expect("invalid num"))
+                .map(|n| (n.parse().expect("invalid num"), n.len()))
                 .collect();
 
-            let (part1_valid, part2_valid) = enumerate(Some(0), &nums, total);
+            let (part1_valid, part2_valid) = enumerate(total, &nums);
             let part1 = if part1_valid { total } else { 0 };
             let part2 = if part2_valid { total } else { 0 };
 
@@ -25,24 +25,24 @@ pub fn run(input: &str) -> Result<(u64, u64)> {
     Ok((part1, part2))
 }
 
-fn enumerate(val: Option<u64>, nums: &[u64], target: u64) -> (bool, bool) {
-    let Some(val) = val else {
-        return (false, false);
-    };
-    let Some((&i, rem_nums)) = nums.split_first() else {
-        return (val == target, val == target);
-    };
+fn enumerate(rem: u64, nums: &[(u64, usize)]) -> (bool, bool) {
+    let (&(num, num_digits), nums) = nums.split_last().unwrap();
+    if nums.is_empty() {
+        return (rem == num, rem == num);
+    }
 
-    let (mut part1, mut part2) = enumerate(val.checked_add(i), rem_nums, target);
-    if !part2 {
-        let (cpart1, cpart2) = enumerate(val.checked_mul(i), rem_nums, target);
+    let mut part1 = false;
+    let mut part2 = false;
+    if rem % num == 0 {
+        (part1, part2) = enumerate(rem / num, nums);
+    }
+    if !part2 && rem % TEN_POW[num_digits] == num {
+        part2 |= enumerate(rem / TEN_POW[num_digits], nums).1;
+    }
+    if !part1 && rem >= num {
+        let (cpart1, cpart2) = enumerate(rem - num, nums);
         part1 |= cpart1;
         part2 |= cpart2;
-    }
-    if !part2 {
-        let i_digits = i.checked_ilog10().unwrap_or(1) as usize;
-        let val2 = val.checked_mul(TEN_POW[i_digits]).map(|v| v + i);
-        part2 |= enumerate(val2, rem_nums, target).1;
     }
 
     (part1, part2)
