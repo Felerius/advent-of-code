@@ -108,6 +108,7 @@ dependencies = [
  "array-const-fn-init",
  "harness",
  "itertools",
+ "num",
  "rayon",
  "utils",
 ]
