@@ -48,3 +48,6 @@ perf = "warn"
 style = "warn"
 suspicious = "warn"
 pedantic = "warn"
+
+[profile.release]
+lto = "thin"
