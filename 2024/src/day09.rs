@@ -1,4 +1,4 @@
-use std::{array, cmp::Reverse, collections::BinaryHeap, iter, time::Instant};
+use std::{array, cmp::Reverse, collections::BinaryHeap, iter};
 
 use anyhow::{ensure, Result};
 
