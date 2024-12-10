@@ -1,5 +1,3 @@
-use std::{array, collections::VecDeque};
-
 use anyhow::Result;
 
 pub fn run(input: &str) -> Result<(usize, usize)> {
@@ -7,51 +5,36 @@ pub fn run(input: &str) -> Result<(usize, usize)> {
     let height = grid.len();
     let width = grid[0].len();
 
-    let mut cnt = vec![vec![0; width]; height];
-    let mut by_height: [_; 9] = array::from_fn(|_| vec![]);
-    for (y, row) in grid.iter().enumerate() {
-        for (x, &h) in row.iter().enumerate() {
-            if h == b'9' {
-                cnt[y][x] = 1;
-            } else {
-                by_height[usize::from(h - b'0')].push((y, x));
-            }
-        }
-    }
-
-    let mut part2 = 0;
-    for (h, pos) in by_height.iter().enumerate().rev() {
-        for &(y, x) in pos {
-            for (y2, x2) in neighbors(y, x, &grid) {
-                cnt[y][x] += cnt[y2][x2];
-            }
-            if h == 0 {
-                part2 += cnt[y][x];
-            }
-        }
-    }
-
-    let mut part1 = 0;
-    let mut queue = VecDeque::new();
-    let mut seen = vec![vec![usize::MAX; width]; height];
-    for (i, &(y0, x0)) in by_height[0].iter().enumerate() {
-        queue.push_back((y0, x0));
-        seen[y0][x0] = i;
-        while let Some((y, x)) = queue.pop_front() {
-            if grid[y][x] == b'9' {
-                part1 += 1;
-            } else {
-                for (y2, x2) in neighbors(y, x, &grid) {
-                    if seen[y2][x2] != i {
-                        seen[y2][x2] = i;
-                        queue.push_back((y2, x2));
-                    }
-                }
-            }
-        }
-    }
+    let mut cache = vec![vec![(usize::MAX, 0); width]; height];
+    let (part1, part2) = itertools::iproduct!(0..height, 0..width)
+        .filter(|&(y, x)| grid[y][x] == b'0')
+        .map(|(y, x)| dfs(y, x, y * width + x, &grid, &mut cache))
+        .fold((0, 0), |(a1, a2), (c1, c2)| (a1 + c1, a2 + c2));
 
     Ok((part1, part2))
+}
+
+fn dfs(
+    y: usize,
+    x: usize,
+    idx: usize,
+    grid: &[&[u8]],
+    cache: &mut [Vec<(usize, usize)>],
+) -> (usize, usize) {
+    if cache[y][x].0 == idx {
+        return (0, cache[y][x].1);
+    }
+    if grid[y][x] == b'9' {
+        cache[y][x] = (idx, 1);
+        return (1, 1);
+    }
+
+    let (cnt1, cnt2) = neighbors(y, x, grid)
+        .map(|(y2, x2)| dfs(y2, x2, idx, grid, cache))
+        .fold((0, 0), |(a1, a2), (c1, c2)| (a1 + c1, a2 + c2));
+
+    cache[y][x] = (idx, cnt2);
+    (cnt1, cnt2)
 }
 
 fn neighbors<'a>(
