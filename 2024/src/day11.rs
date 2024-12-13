@@ -1,9 +1,11 @@
+use std::array;
+
 use anyhow::Result;
 use array_const_fn_init::array_const_fn_init;
 use utils::hash::{FastHashCollectionExt, FastHashMap};
 
 pub fn run(input: &str) -> Result<(usize, usize)> {
-    let mut cache = FastHashMap::new();
+    let mut cache: [_; 76] = array::from_fn(|_| FastHashMap::new());
     let (part1, part2) = input
         .split_ascii_whitespace()
         .map(|s| {
@@ -17,11 +19,11 @@ pub fn run(input: &str) -> Result<(usize, usize)> {
     Ok((part1, part2))
 }
 
-fn simulate(num: u64, steps: u8, cache: &mut FastHashMap<(u64, u8), usize>) -> usize {
+fn simulate(num: u64, steps: usize, cache: &mut [FastHashMap<u64, usize>]) -> usize {
     if steps == 0 {
         return 1;
     }
-    if let Some(&cached) = cache.get(&(num, steps)) {
+    if let Some(&cached) = cache[steps].get(&num) {
         return cached;
     }
 
@@ -34,7 +36,7 @@ fn simulate(num: u64, steps: u8, cache: &mut FastHashMap<(u64, u8), usize>) -> u
     } else {
         simulate(2024 * num, steps - 1, cache)
     };
-    cache.insert((num, steps), result);
+    cache[steps].insert(num, result);
     result
 }
 
