@@ -1,43 +1,47 @@
-use std::array;
+use std::{array, mem};
 
 use anyhow::Result;
 use array_const_fn_init::array_const_fn_init;
 use utils::hash::{FastHashCollectionExt, FastHashMap};
 
 pub fn run(input: &str) -> Result<(usize, usize)> {
-    let mut cache: [_; 76] = array::from_fn(|_| FastHashMap::new());
-    let (part1, part2) = input
-        .split_ascii_whitespace()
-        .map(|s| {
-            let num: u64 = s.parse().unwrap();
-            let part1 = simulate(num, 25, &mut cache);
-            let part2 = simulate(num, 75, &mut cache);
-            (part1, part2)
-        })
-        .fold((0, 0), |(a1, b1), (a2, b2)| (a1 + a2, b1 + b2));
+    let mut cur_cnts = FastHashMap::<_, usize>::with_capacity(4096);
+    let mut prev_cnts = FastHashMap::with_capacity(4096);
+    for s in input.split_ascii_whitespace() {
+        let num: u64 = s.parse()?;
+        *cur_cnts.entry(num).or_default() += 1;
+    }
 
-    Ok((part1, part2))
+    let totals: [_; 75] = array::from_fn(|_| {
+        mem::swap(&mut prev_cnts, &mut cur_cnts);
+        cur_cnts.clear();
+        simulate_step(&prev_cnts, &mut cur_cnts)
+    });
+
+    Ok((totals[24], totals[74]))
 }
 
-fn simulate(num: u64, steps: usize, cache: &mut [FastHashMap<u64, usize>]) -> usize {
-    if steps == 0 {
-        return 1;
-    }
-    if let Some(&cached) = cache[steps].get(&num) {
-        return cached;
-    }
-
-    let result = if num == 0 {
-        simulate(1, steps - 1, cache)
-    } else if num.ilog10() % 2 == 1 {
-        let len = num.ilog10() as usize + 1;
-        simulate(num / TEN_POW[len / 2], steps - 1, cache)
-            + simulate(num % TEN_POW[len / 2], steps - 1, cache)
-    } else {
-        simulate(2024 * num, steps - 1, cache)
-    };
-    cache[steps].insert(num, result);
-    result
+fn simulate_step(
+    prev_cnts: &FastHashMap<u64, usize>,
+    cur_cnts: &mut FastHashMap<u64, usize>,
+) -> usize {
+    prev_cnts
+        .iter()
+        .map(|(&num, &cnt)| {
+            if num == 0 {
+                *cur_cnts.entry(1).or_default() += cnt;
+                cnt
+            } else if num.ilog10() % 2 == 1 {
+                let len = num.ilog10() as usize + 1;
+                *cur_cnts.entry(num / TEN_POW[len / 2]).or_default() += cnt;
+                *cur_cnts.entry(num % TEN_POW[len / 2]).or_default() += cnt;
+                2 * cnt
+            } else {
+                *cur_cnts.entry(2024 * num).or_default() += cnt;
+                cnt
+            }
+        })
+        .sum()
 }
 
 const TEN_POW: [u64; 20] = array_const_fn_init![ten_pow; 20];
