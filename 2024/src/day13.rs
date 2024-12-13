@@ -2,17 +2,17 @@ use anyhow::Result;
 use itertools::Itertools;
 use utils::input;
 
-const OFFSET: u64 = 10_000_000_000_000;
+const OFFSET: i64 = 10_000_000_000_000;
 
-pub fn run(input: &str) -> Result<(u64, u64)> {
+pub fn run(input: &str) -> Result<(i64, i64)> {
     let (part1, part2) = input.lines().filter(|line| !line.is_empty()).tuples().fold(
         (0, 0),
         |(part1, part2), (l1, l2, l3)| {
-            let [dxa, dya] = input::integers(l1);
-            let [dxb, dyb] = input::integers(l2);
-            let [x, y] = input::integers(l3);
-            let part1 = part1 + solve(x, y, dxa, dya, dxb, dyb).unwrap_or(0);
-            let part2 = part2 + solve(x + OFFSET, y + OFFSET, dxa, dya, dxb, dyb).unwrap_or(0);
+            let [x1, x2] = input::integers(l1);
+            let [y1, y2] = input::integers(l2);
+            let [z1, z2] = input::integers(l3);
+            let part1 = part1 + solve(z1, z2, x1, y1, x2, y2).unwrap_or(0);
+            let part2 = part2 + solve(z1 + OFFSET, z2 + OFFSET, x1, y1, x2, y2).unwrap_or(0);
             (part1, part2)
         },
     );
@@ -20,14 +20,10 @@ pub fn run(input: &str) -> Result<(u64, u64)> {
     Ok((part1, part2))
 }
 
-fn solve(x: u64, y: u64, dxa: u64, dya: u64, dxb: u64, dyb: u64) -> Option<u64> {
-    let b = (y as f64 - x as f64 * dya as f64 / dxa as f64)
-        / (dyb as f64 - dxb as f64 * dya as f64 / dxa as f64);
-    let a = (x as f64 - b * dxb as f64) / dxa as f64;
-
-    let a = a.round() as u64;
-    let b = b.round() as u64;
-    let valid = a * dxa + b * dxb == x && a * dya + b * dyb == y;
+fn solve(z1: i64, z2: i64, x1: i64, y1: i64, x2: i64, y2: i64) -> Option<i64> {
+    let b = (z1 * x2 - z2 * x1) / (y1 * x2 - y2 * x1);
+    let a = (z1 - b * y1) / x1;
+    let valid = a * x1 + b * y1 == z1 && a * x2 + b * y2 == z2;
     valid.then_some(3 * a + b)
 }
 
