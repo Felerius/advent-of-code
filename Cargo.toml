@@ -24,6 +24,7 @@ panic-message = "0.3.0"
 rayon = "1.10.0"
 reqwest = { version = "0.12.8", features = ["blocking"] }
 rustc-hash = "2.0.0"
+tinybitset = "0.0.2"
 
 harness = { path = "harness" }
 utils = { path = "utils" }
