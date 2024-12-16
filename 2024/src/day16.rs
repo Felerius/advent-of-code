@@ -19,14 +19,14 @@ pub fn run(input: &str) -> Result<(usize, usize)> {
         }
     }
 
-    let from_start = run_dijkstra(&grid, from, [Direction::East]);
+    let from_start = run_dijkstra(&grid, from, [Direction::East], to);
     let part1 = from_start[to.0][to.1].into_iter().min().unwrap();
 
     let dirs = Direction::ALL
         .into_iter()
         .filter(|&dir| from_start[to.0][to.1][dir as usize] == part1)
         .map(|dir| dir.opposite());
-    let to_end = run_dijkstra(&grid, to, dirs);
+    let to_end = run_dijkstra(&grid, to, dirs, from);
     let part2 = itertools::iproduct!(0..height, 0..width)
         .filter(|&(y, x)| {
             Direction::ALL.into_iter().any(|dir| {
@@ -41,18 +41,27 @@ pub fn run(input: &str) -> Result<(usize, usize)> {
 fn run_dijkstra(
     grid: &[&[u8]],
     from: (usize, usize),
-    init_dirs: impl IntoIterator<Item = Direction>,
+    from_dirs: impl IntoIterator<Item = Direction>,
+    to: (usize, usize),
 ) -> Vec<Vec<[usize; 4]>> {
     let height = grid.len();
     let width = grid[0].len();
 
     let mut cheapest = vec![vec![[usize::MAX / 2; 4]; width]; height];
     let mut queue = BinaryHeap::new();
-    for dir in init_dirs {
+    for dir in from_dirs {
         cheapest[from.0][from.1][dir as usize] = 0;
         queue.push((Reverse(0), from, dir));
     }
+
+    let mut upper_bound = usize::MAX;
     while let Some((Reverse(cost), pos, dir)) = queue.pop() {
+        if pos == to {
+            upper_bound = cost;
+        }
+        if cost > upper_bound {
+            break;
+        }
         if cheapest[pos.0][pos.1][dir as usize] < cost {
             continue;
         }
