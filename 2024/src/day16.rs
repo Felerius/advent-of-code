@@ -1,4 +1,4 @@
-use std::{cmp::Reverse, collections::BinaryHeap, usize};
+use std::{cmp::Reverse, collections::BinaryHeap, thread, usize};
 
 use anyhow::Result;
 
@@ -19,14 +19,12 @@ pub fn run(input: &str) -> Result<(usize, usize)> {
         }
     }
 
-    let from_start = run_dijkstra(&grid, from, [Direction::East], to);
+    let (from_start, to_end) = thread::scope(|scope| {
+        let from_start = scope.spawn(|| run_dijkstra(&grid, from, [Direction::East], to));
+        let to_end = scope.spawn(|| run_dijkstra(&grid, to, Direction::ALL, from));
+        (from_start.join().unwrap(), to_end.join().unwrap())
+    });
     let part1 = from_start[to.0][to.1].into_iter().min().unwrap();
-
-    let dirs = Direction::ALL
-        .into_iter()
-        .filter(|&dir| from_start[to.0][to.1][dir as usize] == part1)
-        .map(|dir| dir.opposite());
-    let to_end = run_dijkstra(&grid, to, dirs, from);
     let part2 = itertools::iproduct!(0..height, 0..width)
         .filter(|&(y, x)| {
             Direction::ALL.into_iter().any(|dir| {
