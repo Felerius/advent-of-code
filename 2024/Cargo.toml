@@ -8,6 +8,7 @@ anyhow.workspace = true
 array-const-fn-init.workspace = true
 arrayvec.workspace = true
 itertools.workspace = true
+joinery.workspace = true
 num.workspace = true
 rayon.workspace = true
 tinybitset.workspace = true
