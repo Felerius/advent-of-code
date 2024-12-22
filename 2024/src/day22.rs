@@ -1,30 +1,42 @@
 use anyhow::Result;
+use rayon::iter::{IndexedParallelIterator, IntoParallelIterator, ParallelIterator};
 
 const NUM_SEQ: usize = 19_usize.pow(4);
 
 pub fn run(input: &str) -> Result<(u64, u32)> {
-    let mut seen = vec![u16::MAX; NUM_SEQ];
-    let mut gain = vec![0_u32; NUM_SEQ];
-    let part1 = input
-        .lines()
+    let lines: Vec<_> = input.lines().collect();
+    let (part1, gain) = lines
+        .into_par_iter()
         .enumerate()
-        .map(|(i, line)| {
-            let mut num = line.parse().unwrap();
-            let mut seq = 0;
-            for j in 0..2000 {
-                let next_num = next(num);
-                let diff = next_num % 10 + 9 - num % 10;
-                seq = seq % 19_usize.pow(3) * 19 + diff as usize;
-                if j >= 3 && seen[seq] != i as u16 {
-                    seen[seq] = i as u16;
-                    gain[seq] += next_num % 10;
-                }
+        .fold(
+            || (0, vec![u16::MAX; NUM_SEQ], vec![0_u32; NUM_SEQ]),
+            |(part1, mut seen, mut gain), (i, line)| {
+                let mut num = line.parse().unwrap();
+                let mut seq = 0;
+                for j in 0..2000 {
+                    let next_num = next(num);
+                    let diff = next_num % 10 + 9 - num % 10;
+                    seq = seq % 19_usize.pow(3) * 19 + diff as usize;
+                    if j >= 3 && seen[seq] != i as u16 {
+                        seen[seq] = i as u16;
+                        gain[seq] += next_num % 10;
+                    }
 
-                num = next_num;
-            }
-            u64::from(num)
-        })
-        .sum();
+                    num = next_num;
+                }
+                (part1 + u64::from(num), seen, gain)
+            },
+        )
+        .map(|(part1, _, gain)| (part1, gain))
+        .reduce(
+            || (0, vec![0_u32; NUM_SEQ]),
+            |(part1_1, mut gain1), (part1_2, gain2)| {
+                for (a, b) in gain1.iter_mut().zip(gain2) {
+                    *a += b;
+                }
+                (part1_1 + part1_2, gain1)
+            },
+        );
     let part2 = gain.into_iter().max().unwrap();
 
     Ok((part1, part2))
