@@ -1,7 +1,4 @@
-use std::{
-    array,
-    fmt::{self, Display, Formatter},
-};
+use std::fmt::{self, Display, Formatter};
 
 use anyhow::Result;
 use itertools::Itertools;
@@ -12,7 +9,7 @@ const N: usize = 26 * 26;
 type AdjBitset = TinyBitSet<u64, 11>;
 
 pub fn run(input: &str) -> Result<(usize, String)> {
-    let mut adj: [_; N] = array::from_fn(|i| AdjBitset::singleton(i));
+    let mut adj = [AdjBitset::new(); N];
     for line in input.lines() {
         let line = line.as_bytes();
         let v1 = parse_node(line[0], line[1]);
@@ -52,17 +49,19 @@ struct State<'a> {
 }
 
 fn enumerate_cliques(state: &mut State<'_>, mut ready: AdjBitset) {
-    let last = state.clique.last().copied();
-    if state.clique.len() > state.largest.len() {
-        state.largest.clear();
-        state.largest.extend(state.clique.iter().copied());
+    if ready.is_empty() {
+        if state.clique.len() > state.largest.len() {
+            state.largest.clear();
+            state.largest.extend(state.clique.iter().copied());
+        }
+        return;
     }
+
     if state.clique.len() + ready.len() <= state.largest.len() {
         return;
     }
 
     for next in ready {
-        debug_assert!(Some(next) > last);
         ready.remove(next);
 
         let next_ready = ready & state.adj[next];
