@@ -12,22 +12,13 @@ const N: usize = 26 * 26;
 type AdjBitset = TinyBitSet<u64, 11>;
 
 pub fn run(input: &str) -> Result<(usize, String)> {
-    let mut adj_matrix = [AdjBitset::new(); N];
-    let mut adj: [_; N] = array::from_fn(|_| Vec::new());
-    for i in 0..N {
-        adj_matrix[i].insert(i);
-    }
+    let mut adj: [_; N] = array::from_fn(|i| AdjBitset::singleton(i));
     for line in input.lines() {
         let line = line.as_bytes();
         let v1 = parse_node(line[0], line[1]);
         let v2 = parse_node(line[3], line[4]);
-        adj_matrix[v1].insert(v2);
-        adj_matrix[v2].insert(v1);
-        adj[v1].push(v2);
-        adj[v2].push(v1);
-    }
-    for row in &mut adj {
-        row.sort_unstable();
+        adj[v1].insert(v2);
+        adj[v2].insert(v1);
     }
 
     let v_ta = parse_node(b't', b'a');
@@ -36,37 +27,49 @@ pub fn run(input: &str) -> Result<(usize, String)> {
         .map(|v1| {
             adj[v1]
                 .iter()
-                .copied()
                 .filter(|v2| !(v1..v_ua).contains(v2))
                 .tuple_combinations()
-                .filter(|&(v2, v3)| adj_matrix[v2][v3])
+                .filter(|&(v2, v3)| adj[v2][v3])
                 .count()
         })
         .sum();
 
-    let part2_bs = (0..N)
-        .flat_map(|v1| {
-            let candidates: AdjBitset = adj_matrix[v1].iter().filter(|&v2| v2 > v1).collect();
-            (0..1 << candidates.len()).filter_map(move |mask| {
-                let sub_candidates: AdjBitset = candidates
-                    .iter()
-                    .enumerate()
-                    .filter(|&(i, _)| mask & 1 << i != 0)
-                    .map(|(_, v)| v)
-                    .collect();
-                let expected = sub_candidates.inserted(v1);
-                let adj_union = sub_candidates
-                    .iter()
-                    .fold(expected, |acc, v2| acc & adj_matrix[v2]);
-
-                (adj_union == expected).then_some(adj_union)
-            })
-        })
-        .max_by_key(|bs| bs.len())
-        .unwrap();
-    let part2 = part2_bs.iter().map(PrintNode).join(",");
+    let mut state = State {
+        adj: &adj,
+        clique: Vec::new(),
+        largest: Vec::new(),
+    };
+    enumerate_cliques(&mut state, (0..N).collect());
+    let part2 = state.largest.into_iter().map(PrintNode).join(",");
 
     Ok((part1, part2))
+}
+
+struct State<'a> {
+    adj: &'a [AdjBitset; N],
+    clique: Vec<usize>,
+    largest: Vec<usize>,
+}
+
+fn enumerate_cliques(state: &mut State<'_>, mut ready: AdjBitset) {
+    let last = state.clique.last().copied();
+    if state.clique.len() > state.largest.len() {
+        state.largest.clear();
+        state.largest.extend(state.clique.iter().copied());
+    }
+    if state.clique.len() + ready.len() <= state.largest.len() {
+        return;
+    }
+
+    for next in ready {
+        debug_assert!(Some(next) > last);
+        ready.remove(next);
+
+        let next_ready = ready & state.adj[next];
+        state.clique.push(next);
+        enumerate_cliques(state, next_ready);
+        state.clique.pop();
+    }
 }
 
 fn parse_node(c1: u8, c2: u8) -> usize {
