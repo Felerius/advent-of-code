@@ -1,10 +1,9 @@
-use anyhow::Result;
 use array_const_fn_init::array_const_fn_init;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 
-pub fn run(input: &str) -> Result<(u64, u64)> {
+pub fn run(input: &str) -> (u64, u64) {
     let lines: Vec<_> = input.lines().collect();
-    let (part1, part2) = lines
+    lines
         .into_par_iter()
         .map(|line| {
             let (total, nums) = line.split_once(": ").expect("invalid line");
@@ -20,9 +19,7 @@ pub fn run(input: &str) -> Result<(u64, u64)> {
 
             (part1, part2)
         })
-        .reduce(|| (0, 0), |(a1, a2), (b1, b2)| (a1 + b1, a2 + b2));
-
-    Ok((part1, part2))
+        .reduce(|| (0, 0), |(a1, a2), (b1, b2)| (a1 + b1, a2 + b2))
 }
 
 fn enumerate(rem: u64, nums: &[(u64, usize)]) -> (bool, bool) {
@@ -71,6 +68,6 @@ mod tests {
 
     #[test]
     fn test() {
-        assert_eq!(run(INPUT).unwrap(), (3749, 11387));
+        assert_eq!(run(INPUT), (3749, 11387));
     }
 }

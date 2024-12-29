@@ -1,6 +1,4 @@
-use anyhow::Result;
-
-pub fn run(input: &str) -> Result<(usize, usize)> {
+pub fn run(input: &str) -> (usize, usize) {
     let grid: Vec<_> = input.lines().map(|line| line.as_bytes()).collect();
     let height = grid.len();
     let width = grid[0].len();
@@ -31,7 +29,7 @@ pub fn run(input: &str) -> Result<(usize, usize)> {
         })
         .count();
 
-    Ok((part1, part2))
+    (part1, part2)
 }
 
 #[cfg(test)]
@@ -51,6 +49,6 @@ SMSMSASXSS
 SAXAMASAAA
 MAMMMXMMMM
 MXMXAXMASX";
-        assert_eq!(run(input).unwrap(), (18, 9));
+        assert_eq!(run(input), (18, 9));
     }
 }

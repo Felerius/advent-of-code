@@ -1,6 +1,5 @@
 use std::fmt::{self, Display, Formatter};
 
-use anyhow::Result;
 use itertools::Itertools;
 use tinybitset::TinyBitSet;
 
@@ -8,7 +7,7 @@ const N: usize = 26 * 26;
 
 type AdjBitset = TinyBitSet<u64, 11>;
 
-pub fn run(input: &str) -> Result<(usize, String)> {
+pub fn run(input: &str) -> (usize, String) {
     let mut adj = [AdjBitset::new(); N];
     for line in input.lines() {
         let line = line.as_bytes();
@@ -39,7 +38,7 @@ pub fn run(input: &str) -> Result<(usize, String)> {
     enumerate_cliques(&mut state, (0..N).collect());
     let part2 = state.largest.into_iter().map(PrintNode).join(",");
 
-    Ok((part1, part2))
+    (part1, part2)
 }
 
 struct State<'a> {
@@ -93,11 +92,11 @@ mod tests {
 
     #[test]
     fn part1() {
-        assert_eq!(run(INPUT).unwrap().0, 7);
+        assert_eq!(run(INPUT).0, 7);
     }
 
     #[test]
     fn part2() {
-        assert_eq!(run(INPUT).unwrap().1, "co,de,ka,ta");
+        assert_eq!(run(INPUT).1, "co,de,ka,ta");
     }
 }

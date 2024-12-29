@@ -1,9 +1,8 @@
 use std::iter;
 
-use anyhow::Result;
 use itertools::Itertools;
 
-pub fn run(input: &str) -> Result<(usize, usize)> {
+pub fn run(input: &str) -> (usize, usize) {
     let mut directional_matrices = [[[1; 5]; 5]; 26];
     for i in 1..26 {
         directional_matrices[i] = compute_transition_table(
@@ -23,7 +22,7 @@ pub fn run(input: &str) -> Result<(usize, usize)> {
         &directional_matrices[25],
     );
 
-    let (part1, part2) = input
+    input
         .lines()
         .map(|line| {
             let keys = line.bytes().map(NumericKey::from_char);
@@ -32,9 +31,7 @@ pub fn run(input: &str) -> Result<(usize, usize)> {
             let number: usize = line[..line.len() - 1].parse().unwrap();
             (number * cmd_len1, number * cmd_len2)
         })
-        .fold((0, 0), |(a1, b1), (a2, b2)| (a1 + a2, b1 + b2));
-
-    Ok((part1, part2))
+        .fold((0, 0), |(a1, b1), (a2, b2)| (a1 + a2, b1 + b2))
 }
 
 fn compute_transition_table<const N: usize>(
@@ -201,6 +198,6 @@ mod tests {
 
     #[test]
     fn part1() {
-        assert_eq!(run(INPUT).unwrap().0, 126384);
+        assert_eq!(run(INPUT).0, 126384);
     }
 }

@@ -1,12 +1,11 @@
 use std::collections::VecDeque;
 
-use anyhow::Result;
 use utils::input;
 
 const WIDTH: usize = 71;
 const HEIGHT: usize = 71;
 
-pub fn run(input: &str) -> Result<(usize, String)> {
+pub fn run(input: &str) -> (usize, String) {
     let bytes: Vec<_> = input
         .lines()
         .map(|line| input::integers::<usize, 2>(line))
@@ -62,7 +61,7 @@ pub fn run(input: &str) -> Result<(usize, String)> {
         .unwrap();
     let part2 = format!("{x},{y}");
 
-    Ok((part1, part2))
+    (part1, part2)
 }
 
 fn neighbors(x: usize, y: usize) -> impl Iterator<Item = (usize, usize)> {

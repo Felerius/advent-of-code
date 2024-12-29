@@ -1,8 +1,6 @@
 use std::collections::VecDeque;
 
-use anyhow::Result;
-
-pub fn run(input: &str) -> Result<(usize, usize)> {
+pub fn run(input: &str) -> (usize, usize) {
     let grid: Vec<_> = input.lines().map(|line| line.as_bytes()).collect();
     let height = grid.len();
     let width = grid[0].len();
@@ -53,7 +51,7 @@ pub fn run(input: &str) -> Result<(usize, usize)> {
         part2 += area * corners;
     }
 
-    Ok((part1, part2))
+    (part1, part2)
 }
 
 fn neighbors(y: usize, x: usize, grid: &[&[u8]]) -> [Option<(usize, usize)>; 8] {
@@ -120,17 +118,17 @@ AAAAAA";
 
     #[test]
     fn part1() {
-        assert_eq!(run(INPUT1).unwrap().0, 140);
-        assert_eq!(run(INPUT2).unwrap().0, 772);
-        assert_eq!(run(INPUT3).unwrap().0, 1930);
+        assert_eq!(run(INPUT1).0, 140);
+        assert_eq!(run(INPUT2).0, 772);
+        assert_eq!(run(INPUT3).0, 1930);
     }
 
     #[test]
     fn part2() {
-        assert_eq!(run(INPUT1).unwrap().1, 80);
-        assert_eq!(run(INPUT2).unwrap().1, 436);
-        assert_eq!(run(INPUT4).unwrap().1, 236);
-        assert_eq!(run(INPUT5).unwrap().1, 368);
-        assert_eq!(run(INPUT3).unwrap().1, 1206);
+        assert_eq!(run(INPUT1).1, 80);
+        assert_eq!(run(INPUT2).1, 436);
+        assert_eq!(run(INPUT4).1, 236);
+        assert_eq!(run(INPUT5).1, 368);
+        assert_eq!(run(INPUT3).1, 1206);
     }
 }

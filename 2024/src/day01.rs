@@ -1,8 +1,7 @@
-use anyhow::Result;
 use itertools::{EitherOrBoth, Itertools};
 use utils::input;
 
-pub fn run(input: &str) -> Result<(u64, u64)> {
+pub fn run(input: &str) -> (u64, u64) {
     let (mut list1, mut list2): (Vec<_>, Vec<_>) = input
         .lines()
         .map(|line| {
@@ -36,7 +35,7 @@ pub fn run(input: &str) -> Result<(u64, u64)> {
         })
         .sum();
 
-    Ok((part1, part2))
+    (part1, part2)
 }
 
 #[cfg(test)]
@@ -46,6 +45,6 @@ mod tests {
     #[test]
     fn test_run() {
         let input = "3 4\n4 3\n2 5\n1 3\n3 9\n3 3";
-        assert_eq!(run(input).unwrap(), (11, 31));
+        assert_eq!(run(input), (11, 31));
     }
 }

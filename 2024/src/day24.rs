@@ -1,12 +1,11 @@
 use std::{collections::VecDeque, mem, str};
 
-use anyhow::Result;
 use itertools::Itertools;
 use utils::hash::{FastHashCollectionExt, FastHashMap};
 
-pub fn run(input: &str) -> Result<(u64, String)> {
+pub fn run(input: &str) -> (u64, String) {
     let (adj, wire_vals) = parse_graph(input);
-    Ok((part1(&adj, wire_vals), part2(&adj)))
+    (part1(&adj, wire_vals), part2(&adj))
 }
 
 fn part1(adj: &FastHashMap<Wire, Vec<Gate>>, mut wire_vals: FastHashMap<Wire, bool>) -> u64 {

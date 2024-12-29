@@ -1,8 +1,7 @@
-use anyhow::Result;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 
-pub fn run(input: &str) -> Result<(usize, usize)> {
-    Ok(run_testable(input, 100))
+pub fn run(input: &str) -> (usize, usize) {
+    run_testable(input, 100)
 }
 
 fn run_testable(input: &str, shortcut_threshold: usize) -> (usize, usize) {

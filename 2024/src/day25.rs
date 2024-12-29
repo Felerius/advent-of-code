@@ -1,9 +1,8 @@
 use std::array;
 
-use anyhow::Result;
 use itertools::Itertools;
 
-pub fn run(input: &str) -> Result<(usize, usize)> {
+pub fn run(input: &str) -> (usize, u8) {
     let mut locks = [[[[[0; 6]; 6]; 6]; 6]; 6];
     let mut keys = Vec::new();
     let line_groups = input
@@ -47,7 +46,7 @@ pub fn run(input: &str) -> Result<(usize, usize)> {
         .map(|&[h1, h2, h3, h4, h5]| locks[5 - h1][5 - h2][5 - h3][5 - h4][5 - h5])
         .sum();
 
-    Ok((part1, 0))
+    (part1, 0)
 }
 
 #[cfg(test)]
@@ -97,6 +96,6 @@ mod tests {
 
     #[test]
     fn part1() {
-        assert_eq!(run(INPUT).unwrap().0, 3);
+        assert_eq!(run(INPUT).0, 3);
     }
 }

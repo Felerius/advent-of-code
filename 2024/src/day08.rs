@@ -1,10 +1,9 @@
 use std::array;
 
-use anyhow::Result;
 use itertools::Itertools;
 use num::Integer;
 
-pub fn run(input: &str) -> Result<(usize, usize)> {
+pub fn run(input: &str) -> (usize, usize) {
     let grid: Vec<_> = input.lines().map(|line| line.as_bytes()).collect();
     let height = grid.len();
     let width = grid[0].len();
@@ -48,10 +47,12 @@ pub fn run(input: &str) -> Result<(usize, usize)> {
         }
     }
 
-    let part1 = antinode.iter().flatten().filter(|&&b| b & 1 != 0).count();
-    let part2 = antinode.iter().flatten().filter(|&&b| b & 2 != 0).count();
-
-    Ok((part1, part2))
+    antinode
+        .iter()
+        .flatten()
+        .fold((0, 0), |(part1, part2), &b| {
+            (part1 + usize::from(b & 1), part2 + usize::from(b & 2 != 0))
+        })
 }
 
 #[cfg(test)]
@@ -74,6 +75,6 @@ mod tests {
 
     #[test]
     fn test() {
-        assert_eq!(run(INPUT).unwrap(), (14, 34));
+        assert_eq!(run(INPUT), (14, 34));
     }
 }

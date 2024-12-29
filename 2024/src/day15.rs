@@ -1,6 +1,5 @@
 use std::fmt::{self, Display, Formatter};
 
-use anyhow::Result;
 use arrayvec::ArrayVec;
 use itertools::Itertools;
 use tinybitset::TinyBitSet;
@@ -10,7 +9,7 @@ type RowBitSet1 = TinyBitSet<u64, 1>;
 type RowBitSet2 = TinyBitSet<u128, 1>;
 type RowArrayVec<T> = ArrayVec<T, 100>;
 
-pub fn run(input: &str) -> Result<(usize, usize)> {
+pub fn run(input: &str) -> (usize, usize) {
     let mut lines = input.lines().map(|line| line.as_bytes());
     let mut robot = (0, 0);
     let mut width = 0;
@@ -69,7 +68,7 @@ pub fn run(input: &str) -> Result<(usize, usize)> {
         state2.process_move(direction);
     }
 
-    Ok((state1.coordinate_sum(), state2.coordinate_sum()))
+    (state1.coordinate_sum(), state2.coordinate_sum())
 }
 
 struct State1 {
@@ -306,25 +305,25 @@ v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^";
 
     #[test]
     fn small_part1() {
-        let (part1, _) = run(SMALL_INPUT1).unwrap();
+        let (part1, _) = run(SMALL_INPUT1);
         assert_eq!(part1, 2028);
     }
 
     #[test]
     fn large_part1() {
-        let (part1, _) = run(LARGE_INPUT).unwrap();
+        let (part1, _) = run(LARGE_INPUT);
         assert_eq!(part1, 10092);
     }
 
     #[test]
     fn small_part2() {
-        let (_, part2) = run(SMALL_INPUT2).unwrap();
+        let (_, part2) = run(SMALL_INPUT2);
         assert_eq!(part2, 105 + 207 + 306);
     }
 
     #[test]
     fn large_part2() {
-        let (_, part2) = run(LARGE_INPUT).unwrap();
+        let (_, part2) = run(LARGE_INPUT);
         assert_eq!(part2, 9021);
     }
 }

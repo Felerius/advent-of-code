@@ -1,13 +1,12 @@
 use std::collections::VecDeque;
 
-use anyhow::Result;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use tinybitset::TinyBitSet;
 
 const ALPHABET: usize = 5;
 const MAX_PATTERN_LEN: usize = 8;
 
-pub fn run(input: &str) -> Result<(usize, usize)> {
+pub fn run(input: &str) -> (usize, usize) {
     let mut lines = input.lines();
     let mut aho_corasick = AhoCorasick::new();
     for pattern in lines.next().unwrap().split(", ") {
@@ -16,7 +15,7 @@ pub fn run(input: &str) -> Result<(usize, usize)> {
     aho_corasick.finalize();
 
     let haystacks: Vec<_> = lines.skip(1).collect();
-    let (part1, part2) = haystacks
+    haystacks
         .into_par_iter()
         .map(|line| {
             let mut dp = [0; MAX_PATTERN_LEN];
@@ -33,9 +32,7 @@ pub fn run(input: &str) -> Result<(usize, usize)> {
             let cnt = dp[line.len() % MAX_PATTERN_LEN];
             (usize::from(cnt > 0), cnt)
         })
-        .reduce(|| (0, 0), |(a1, b1), (a2, b2)| (a1 + a2, b1 + b2));
-
-    Ok((part1, part2))
+        .reduce(|| (0, 0), |(a1, b1), (a2, b2)| (a1 + a2, b1 + b2))
 }
 
 struct AhoCorasick {
@@ -113,6 +110,6 @@ bbrgwb";
 
     #[test]
     fn test() {
-        assert_eq!(run(INPUT).unwrap(), (6, 16));
+        assert_eq!(run(INPUT), (6, 16));
     }
 }

@@ -1,8 +1,6 @@
 use std::{cmp::Reverse, collections::BinaryHeap, thread, usize};
 
-use anyhow::Result;
-
-pub fn run(input: &str) -> Result<(usize, usize)> {
+pub fn run(input: &str) -> (usize, usize) {
     let grid: Vec<_> = input.lines().map(|line| line.as_bytes()).collect();
     let height = grid.len();
     let width = grid[0].len();
@@ -33,7 +31,7 @@ pub fn run(input: &str) -> Result<(usize, usize)> {
         })
         .count();
 
-    Ok((part1, part2))
+    (part1, part2)
 }
 
 fn run_dijkstra(
@@ -157,21 +155,21 @@ mod tests {
 
     #[test]
     fn part1_maze1() {
-        assert_eq!(run(INPUT1).unwrap().0, 7036);
+        assert_eq!(run(INPUT1).0, 7036);
     }
 
     #[test]
     fn part1_maze2() {
-        assert_eq!(run(INPUT2).unwrap().0, 11048);
+        assert_eq!(run(INPUT2).0, 11048);
     }
 
     #[test]
     fn part2_maze1() {
-        assert_eq!(run(INPUT1).unwrap().1, 45);
+        assert_eq!(run(INPUT1).1, 45);
     }
 
     #[test]
     fn part2_maze2() {
-        assert_eq!(run(INPUT2).unwrap().1, 64);
+        assert_eq!(run(INPUT2).1, 64);
     }
 }

@@ -5,11 +5,7 @@ use anyhow::{ensure, Result};
 pub fn run(input: &str) -> Result<(usize, usize)> {
     let input = input.as_bytes();
     ensure!(input.len() % 2 == 1);
-
-    let part1 = calc_part1(input);
-    let part2 = calc_part2(input);
-
-    Ok((part1, part2))
+    Ok((calc_part1(input), calc_part2(input)))
 }
 
 fn calc_part1(input: &[u8]) -> usize {

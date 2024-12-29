@@ -1,17 +1,13 @@
-use anyhow::Result;
-
-pub fn run(input: &str) -> Result<(usize, usize)> {
+pub fn run(input: &str) -> (usize, usize) {
     let grid: Vec<_> = input.lines().map(|line| line.as_bytes()).collect();
     let height = grid.len();
     let width = grid[0].len();
 
     let mut cache = vec![vec![(usize::MAX, 0); width]; height];
-    let (part1, part2) = itertools::iproduct!(0..height, 0..width)
+    itertools::iproduct!(0..height, 0..width)
         .filter(|&(y, x)| grid[y][x] == b'0')
         .map(|(y, x)| dfs(y, x, y * width + x, &grid, &mut cache))
-        .fold((0, 0), |(a1, a2), (c1, c2)| (a1 + c1, a2 + c2));
-
-    Ok((part1, part2))
+        .fold((0, 0), |(a1, a2), (c1, c2)| (a1 + c1, a2 + c2))
 }
 
 fn dfs(
@@ -71,6 +67,6 @@ mod tests {
 
     #[test]
     fn test() {
-        assert_eq!(run(INPUT).unwrap(), (36, 81));
+        assert_eq!(run(INPUT), (36, 81));
     }
 }

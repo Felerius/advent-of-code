@@ -1,9 +1,8 @@
-use anyhow::Result;
 use rayon::iter::{IndexedParallelIterator, IntoParallelIterator, ParallelIterator};
 
 const NUM_SEQ: usize = 19_usize.pow(4);
 
-pub fn run(input: &str) -> Result<(u64, u32)> {
+pub fn run(input: &str) -> (u64, u32) {
     let lines: Vec<_> = input.lines().collect();
     let (part1, gain) = lines
         .into_par_iter()
@@ -39,7 +38,7 @@ pub fn run(input: &str) -> Result<(u64, u32)> {
         );
     let part2 = gain.into_iter().max().unwrap();
 
-    Ok((part1, part2))
+    (part1, part2)
 }
 
 fn next(mut x: u32) -> u32 {
@@ -67,11 +66,11 @@ mod tests {
 
     #[test]
     fn part1() {
-        assert_eq!(run("1\n10\n100\n2024").unwrap().0, 37327623);
+        assert_eq!(run("1\n10\n100\n2024").0, 37327623);
     }
 
     #[test]
     fn part2() {
-        assert_eq!(run("1\n2\n3\n2024").unwrap().1, 23);
+        assert_eq!(run("1\n2\n3\n2024").1, 23);
     }
 }

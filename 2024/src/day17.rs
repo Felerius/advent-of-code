@@ -1,13 +1,12 @@
-use anyhow::Result;
 use itertools::Itertools;
 use joinery::Joinable;
 use utils::input;
 
-pub fn run(input: &str) -> Result<(String, u64)> {
+pub fn run(input: &str) -> (String, u64) {
     run_testable(input, false)
 }
 
-fn run_testable(input: &str, skip_part2: bool) -> Result<(String, u64)> {
+fn run_testable(input: &str, skip_part2: bool) -> (String, u64) {
     let (l1, l2, l3, _, l5) = input.lines().collect_tuple().unwrap();
     let registers = [l1, l2, l3].map(|line| input::integers::<u64, 1>(line)[0]);
     let program: Vec<_> = l5[9..]
@@ -30,7 +29,7 @@ fn run_testable(input: &str, skip_part2: bool) -> Result<(String, u64)> {
         reconstruct_part2(&program, 0, 0).unwrap()
     };
 
-    Ok((part1, part2))
+    (part1, part2)
 }
 
 fn reconstruct_part2(program: &[u8], length: usize, value: u64) -> Option<u64> {
@@ -130,11 +129,11 @@ Program: 0,3,5,4,3,0";
 
     #[test]
     fn part1() {
-        assert_eq!(run_testable(INPUT1, true).unwrap().0, "4,6,3,5,6,3,5,2,1,0");
+        assert_eq!(run_testable(INPUT1, true).0, "4,6,3,5,6,3,5,2,1,0");
     }
 
     #[test]
     fn part2() {
-        assert_eq!(run(INPUT2).unwrap().1, 117440);
+        assert_eq!(run(INPUT2).1, 117440);
     }
 }

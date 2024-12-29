@@ -1,8 +1,7 @@
-use anyhow::Result;
 use itertools::Itertools;
 
-pub fn run(input: &str) -> Result<(usize, usize)> {
-    let (part1, part2) = input.trim().lines().fold((0, 0), |(part1, part2), line| {
+pub fn run(input: &str) -> (usize, usize) {
+    input.trim().lines().fold((0, 0), |(part1, part2), line| {
         let nums: Vec<_> = line
             .split_ascii_whitespace()
             .map(|n| n.parse::<u32>().unwrap())
@@ -18,9 +17,7 @@ pub fn run(input: &str) -> Result<(usize, usize)> {
                 is_safe(without)
             });
         (part1 + usize::from(safe1), part2 + usize::from(safe2))
-    });
-
-    Ok((part1, part2))
+    })
 }
 
 fn is_safe<'a>(iter: impl IntoIterator<Item = &'a u32>) -> bool {
@@ -50,6 +47,6 @@ mod tests {
             8 6 4 4 1
             1 3 6 7 9
         ";
-        assert_eq!(run(input).unwrap(), (2, 4));
+        assert_eq!(run(input), (2, 4));
     }
 }
