@@ -8,7 +8,6 @@ anyhow.workspace = true
 clap.workspace = true
 concat-idents.workspace = true
 directories.workspace = true
-divan.workspace = true
 indicatif.workspace = true
 once_cell.workspace = true
 owo-colors.workspace = true

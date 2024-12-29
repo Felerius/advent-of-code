@@ -1,4 +1,3 @@
-pub mod bench;
 pub mod cli;
 
 use std::{
@@ -128,5 +127,4 @@ where
 #[doc(hidden)]
 pub mod __macro_support {
     pub use concat_idents::concat_idents;
-    pub use divan::{self, bench, main, Bencher};
 }
