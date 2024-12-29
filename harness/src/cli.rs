@@ -1,11 +1,13 @@
 use std::{
+    cmp::Reverse,
     ops::Range,
     process,
     time::{Duration, Instant},
 };
 
 use anyhow::{Context, Result};
-use clap::Parser;
+use clap::{Parser, ValueEnum};
+use indicatif::{ProgressBar, ProgressIterator, ProgressStyle};
 use owo_colors::OwoColorize;
 
 use crate::Solution;
@@ -13,46 +15,22 @@ use crate::Solution;
 pub type SolutionFn = fn(&str) -> Result<Solution>;
 pub type SolutionList = [SolutionFn; 25];
 
-#[derive(Parser)]
-struct Args {
-    #[clap(value_parser = parse_days_arg, default_value = "1..=25")]
-    days: Range<u8>,
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
+enum Mode {
+    /// Run solutions and print the values for both parts
+    Run,
 
-    #[clap(short, long)]
-    bench: bool,
+    /// Benchmark solutions and analyze the results
+    Bench,
 }
 
-fn run_fallible(year: usize, solutions: SolutionList) -> Result<()> {
-    let args = Args::parse();
-    let star = "*".fg_rgb::<0xFF, 0xFF, 0x66>();
-    let mut total_runtime = Duration::ZERO;
-    for day in args.days.map(usize::from) {
-        let input = crate::get_input(year, day)?;
-        let solution = solutions[day - 1];
-        let output = solution(&input).with_context(|| format!("solution for day {day} failed"))?;
-        let runtime = args.bench.then(|| bench(solution, &input)).transpose()?;
+#[derive(Parser)]
+struct Args {
+    #[clap(value_enum)]
+    mode: Mode,
 
-        if let Solution(Some((part1, part2))) = output {
-            print!("{}", format_args!("Day {day}").blue().bold());
-            if let Some(runtime) = runtime {
-                print!(" ({runtime:.2?})");
-                total_runtime += runtime;
-            }
-            println!();
-
-            println!("  {star} Part 1: {part1}");
-            if day != 25 {
-                println!("  {star} Part 2: {part2}");
-            }
-        }
-    }
-
-    if args.bench {
-        let text = format!("Total runtime: {total_runtime:.2?}");
-        println!("{}", text.blue().bold());
-    }
-
-    Ok(())
+    #[clap(value_parser = parse_days_arg, default_value = "1..=25")]
+    days: Range<u8>,
 }
 
 pub fn run(year: usize, solutions: SolutionList) {
@@ -60,6 +38,88 @@ pub fn run(year: usize, solutions: SolutionList) {
         eprintln!("{:?}", err);
         process::exit(1);
     }
+}
+
+fn run_fallible(year: usize, solutions: SolutionList) -> Result<()> {
+    let args = Args::parse();
+    let days: Vec<_> = args
+        .days
+        .map(|day| {
+            let day = usize::from(day);
+            let input = crate::get_input(year, day)?;
+            Ok((day, solutions[day - 1], input))
+        })
+        .collect::<Result<_>>()?;
+
+    let func = match args.mode {
+        Mode::Run => run_solutions,
+        Mode::Bench => bench_solutions,
+    };
+    func(days)
+}
+
+fn run_solutions(days: Vec<(usize, SolutionFn, String)>) -> Result<()> {
+    let star = "*".fg_rgb::<0xFF, 0xFF, 0x66>();
+    for (day, solution, input) in days {
+        let output = solution(&input).with_context(|| format!("solution for day {day} failed"))?;
+        if let Solution(Some((part1, part2))) = output {
+            println!("{}", format_args!("Day {day}").blue().bold());
+            println!("  {star} Part 1: {part1}");
+            if day != 25 {
+                println!("  {star} Part 2: {part2}");
+            }
+        }
+    }
+
+    Ok(())
+}
+
+fn bench_solutions(days: Vec<(usize, SolutionFn, String)>) -> Result<()> {
+    let progress_style = ProgressStyle::with_template("Benchmarking...\n{wide_bar} {pos}/{len}")
+        .expect("invalid hardcoded template");
+    let progress_bar = ProgressBar::new(days.len() as u64).with_style(progress_style);
+    // Immediately print with the bar with zero progress
+    progress_bar.tick();
+
+    let mut runtimes: Vec<_> = days
+        .into_iter()
+        .map(|(day, solution, input)| {
+            let runtime = bench_solution(solution, &input)
+                .with_context(|| format!("benchmarking day {day} failed"))?;
+            Ok((day, runtime))
+        })
+        .progress_with(progress_bar)
+        .collect::<Result<_>>()?;
+    runtimes.sort_unstable_by_key(|&(_, runtime)| Reverse(runtime));
+
+    let total_runtime: Duration = runtimes.iter().map(|(_, runtime)| runtime).sum();
+    println!("{} {:.2?}", "Total runtime:".blue().bold(), total_runtime);
+    println!("{}", "Days (slowest to fastest):".blue().bold());
+    for (day, runtime) in runtimes {
+        println!("  • {runtime:.2?} (day {day})");
+    }
+
+    Ok(())
+}
+
+fn bench_solution(solution: SolutionFn, input: &str) -> Result<Duration> {
+    let mut times = Vec::new();
+    let start = Instant::now();
+    for size in (1..).map(|i| 2_usize.pow(i) - 1) {
+        if start.elapsed() > Duration::from_secs(1) {
+            break;
+        }
+
+        while times.len() < size {
+            let start_bench = Instant::now();
+            solution(input)?;
+            let elapsed = start_bench.elapsed();
+            times.push(elapsed);
+        }
+    }
+
+    let median_index = times.len() / 2;
+    Ok(*times.select_nth_unstable(median_index).1)
 }
 
 fn parse_days_arg(s: &str) -> Result<Range<u8>> {
@@ -83,26 +143,6 @@ fn parse_bound_or_empty(s: &str, default: u8) -> Result<u8> {
     } else {
         s.parse().context("failed to parse range bound")
     }
-}
-
-fn bench(solution: SolutionFn, input: &str) -> Result<Duration> {
-    let mut times = Vec::new();
-    let start = Instant::now();
-    for size in (1..).map(|i| 2_usize.pow(i) - 1) {
-        if start.elapsed() > Duration::from_secs(1) {
-            break;
-        }
-
-        while times.len() < size {
-            let start_bench = Instant::now();
-            solution(input)?;
-            let elapsed = start_bench.elapsed();
-            times.push(elapsed);
-        }
-    }
-
-    let median_index = times.len() / 2;
-    Ok(*times.select_nth_unstable(median_index).1)
 }
 
 #[macro_export]
