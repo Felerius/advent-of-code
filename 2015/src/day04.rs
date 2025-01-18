@@ -109,8 +109,8 @@ mod tests {
 
     #[test]
     fn part1() -> Result<()> {
-        assert_eq!(run("abcdef")?.0, 609043);
-        assert_eq!(run("pqrstuv")?.0, 1048970);
+        assert_eq!(run("abcdef")?.0, 609_043);
+        assert_eq!(run("pqrstuv")?.0, 1_048_970);
         Ok(())
     }
 }

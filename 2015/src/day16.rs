@@ -13,13 +13,11 @@ pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
                 let (valid1, valid2) = match typ {
                     "children" => (value == 3, value == 3),
                     "cats" => (value == 7, value > 7),
-                    "samoyeds" => (value == 2, value == 2),
+                    "samoyeds" | "cars" => (value == 2, value == 2),
                     "pomeranians" => (value == 3, value < 3),
-                    "akitas" => (value == 0, value == 0),
-                    "vizslas" => (value == 0, value == 0),
+                    "akitas" | "vizslas" => (value == 0, value == 0),
                     "goldfish" => (value == 5, value < 5),
                     "trees" => (value == 3, value > 3),
-                    "cars" => (value == 2, value == 2),
                     "perfumes" => (value == 1, value == 1),
                     _ => bail!("unknown property: {typ}"),
                 };

@@ -1,16 +1,14 @@
 use std::{cmp::Reverse, collections::BinaryHeap};
 
-use anyhow::Result;
 use arrayvec::ArrayVec;
 use utils::{hash::FastHashMap, input};
 
-pub(crate) fn run(input: &str) -> Result<(u16, u16)> {
+pub(crate) fn run(input: &str) -> (u16, u16) {
     let [boss_hp, boss_dmg] = input::integers(input);
-    let part1 = solve(boss_hp, boss_dmg, 0);
-    let part2 = solve(boss_hp, boss_dmg, 1);
-    Ok((part1, part2))
+    (solve(boss_hp, boss_dmg, 0), solve(boss_hp, boss_dmg, 1))
 }
 
+#[allow(clippy::similar_names)]
 fn solve(boss_hp: u8, boss_dmg: u8, hp_drain: u8) -> u16 {
     let initial = State {
         mana: 500,
@@ -127,11 +125,11 @@ impl State {
         self.shield_turns = self.shield_turns.saturating_sub(1);
         if self.poison_turns > 0 {
             self.boss_hp = self.boss_hp.saturating_sub(3);
-            self.poison_turns = self.poison_turns - 1;
+            self.poison_turns -= 1;
         }
         if self.recharge_turns > 0 {
             self.mana += 101;
-            self.recharge_turns = self.recharge_turns - 1;
+            self.recharge_turns -= 1;
         }
 
         self.hp == 0 || self.boss_hp == 0

@@ -7,7 +7,7 @@ pub(crate) fn run(input: &str) -> Result<(i64, i64)> {
 }
 
 fn eval(s: &[u8]) -> Result<(i64, i64, &[u8])> {
-    let Some(&c0) = s.get(0) else {
+    let Some(&c0) = s.first() else {
         return Ok((0, 0, &[]));
     };
 
@@ -19,7 +19,7 @@ fn eval(s: &[u8]) -> Result<(i64, i64, &[u8])> {
 }
 
 fn eval_literal(mut s: &[u8]) -> Result<(i64, i64, &[u8])> {
-    if s.starts_with(&[b'"']) {
+    if s.starts_with(b"\"") {
         let len = s[1..]
             .iter()
             .position(|&c| c == b'"')

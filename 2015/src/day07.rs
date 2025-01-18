@@ -72,10 +72,10 @@ fn eval_input(
 }
 
 fn parse_instruction(s: &str) -> Result<Instruction> {
-    let Some((head, tail)) = s.split_once(" ") else {
+    let Some((head, tail)) = s.split_once(' ') else {
         return Ok(Instruction::Assign(parse_input(s)?));
     };
-    let Some((mid, tail)) = tail.split_once(" ") else {
+    let Some((mid, tail)) = tail.split_once(' ') else {
         debug_assert_eq!(head, "NOT");
         return Ok(Instruction::Not(parse_input(tail)?));
     };

@@ -5,13 +5,13 @@ const BLOCK: usize = 1 << 16;
 
 pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
     let target: usize = input.parse()?;
-    let mut data = Box::new([0; BLOCK]);
+    let mut data = vec![0; BLOCK].into_boxed_slice();
     let part1 = part1(target.div_ceil(10), &mut data);
     let part2 = part2(target.div_ceil(11), &mut data);
     Ok((part1, part2))
 }
 
-fn part1(target: usize, sieve: &mut [usize; BLOCK]) -> usize {
+fn part1(target: usize, sieve: &mut [usize]) -> usize {
     let mut small_sieve = SmallSieve::new();
     for block_start in (lower_bound(target)..).step_by(BLOCK) {
         sieve.fill(1);
@@ -27,11 +27,11 @@ fn part1(target: usize, sieve: &mut [usize; BLOCK]) -> usize {
             }
         }
 
-        for i in 0..BLOCK {
-            if sieve[i] == 1 {
-                sieve[i] = block_start + i + 1;
+        for (i, entry) in sieve.iter_mut().enumerate() {
+            if *entry == 1 {
+                *entry = block_start + i + 1;
             }
-            if sieve[i] >= target {
+            if *entry >= target {
                 return block_start + i;
             }
         }
@@ -40,10 +40,10 @@ fn part1(target: usize, sieve: &mut [usize; BLOCK]) -> usize {
     unreachable!("endless loop finished")
 }
 
-fn part2(target: usize, dp: &mut [usize; BLOCK]) -> usize {
+fn part2(target: usize, dp: &mut [usize]) -> usize {
     for block_start in (lower_bound(target)..).step_by(BLOCK) {
-        for i in 0..BLOCK {
-            dp[i] = i + block_start;
+        for (i, entry) in dp.iter_mut().enumerate() {
+            *entry = i + block_start;
         }
 
         for i in BLOCK..(block_start + BLOCK) / 2 {
@@ -61,10 +61,8 @@ fn part2(target: usize, dp: &mut [usize; BLOCK]) -> usize {
             }
         }
 
-        for i in 0..BLOCK {
-            if dp[i] >= target {
-                return block_start + i;
-            }
+        if let Some(i) = dp.iter().position(|&x| x >= target) {
+            return block_start + i;
         }
     }
 
@@ -92,7 +90,7 @@ fn lower_bound(target: usize) -> usize {
 
 fn robins_upper_bound(n: usize) -> f64 {
     // See https://en.wikipedia.org/wiki/Divisor_function#Growth_rate
-    const E_TO_GAMMA: f64 = 1.7810724179901979852365041031071795491696452143034302053576658765;
+    const E_TO_GAMMA: f64 = 1.781_072_417_990_198;
     let n = n as f64;
     E_TO_GAMMA * n * n.ln().ln()
 }

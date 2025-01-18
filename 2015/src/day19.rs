@@ -12,7 +12,7 @@ pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
         names: FastHashMap::new(),
     };
     let mut part1 = FastHashSet::new();
-    while let Some(line) = lines.next() {
+    for line in lines {
         if line.is_empty() {
             break;
         }
@@ -87,7 +87,7 @@ impl<'a> ChomskyNormalForm<'a> {
     }
 }
 
-fn split_elements<'a>(mut input: &'a [u8]) -> impl Iterator<Item = &'a [u8]> {
+fn split_elements(mut input: &[u8]) -> impl Iterator<Item = &'_ [u8]> {
     iter::from_fn(move || {
         if let Some((elem, tail)) = input
             .split_at_checked(2)

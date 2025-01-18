@@ -28,7 +28,7 @@ fn next(i: u64) -> u64 {
     // suffix has to be of the form "aabcc", "bbcdd", etc.
 
     /// Encoded form of "aabcc"
-    const BASE_SUFFIX: u64 = ((1 * 26) + 2) * 26 + 2;
+    const BASE_SUFFIX: u64 = (26 + 2) * 26 + 2;
     /// Increment from from "aabcc" to "bbcdd" (and so on)
     const INCREMENT: u64 = (26_u64.pow(5) - 1) / 25;
     /// All suffixes that don't contain any of the forbidden characters

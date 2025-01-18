@@ -2,7 +2,7 @@ use anyhow::{Context, Result};
 use utils::input;
 
 pub(crate) fn run(input: &str) -> Result<(u32, u32)> {
-    let reindeers: Vec<[u32; 3]> = input.lines().map(|line| input::integers(line)).collect();
+    let reindeers: Vec<[u32; 3]> = input.lines().map(input::integers).collect();
 
     let mut distance = vec![0; reindeers.len()];
     let mut points = vec![0; reindeers.len()];

@@ -16,8 +16,8 @@ pub(crate) fn run(input: &str) -> Result<(usize, u64)> {
     let height = yses.len() - 1;
 
     // Not using `Vec`'s here provides a 3x speedup, probably because of auto vectorization?
-    let mut grid1 = Box::new([false; SIZE * SIZE]);
-    let mut grid2 = Box::new([0_u16; SIZE * SIZE]);
+    let mut grid1 = vec![false; SIZE * SIZE].into_boxed_slice();
+    let mut grid2 = vec![0_u16; SIZE * SIZE].into_boxed_slice();
     for (typ, x_range, y_range) in instrs {
         let x_start = x_map[usize::from(x_range.start)];
         let x_end = x_map[usize::from(x_range.end)];
@@ -47,7 +47,7 @@ pub(crate) fn run(input: &str) -> Result<(usize, u64)> {
             .fold((0, 0), |(part1, part2), (x, y)| {
                 let block_width = xses[x + 1] - xses[x];
                 let block_height = yses[y + 1] - yses[y];
-                let block_size = usize::from(block_width) * usize::from(block_height);
+                let block_size = block_width * block_height;
                 let i = x * height + y;
                 (
                     part1 + usize::from(grid1[i]) * block_size,
@@ -85,6 +85,8 @@ fn parse_instruction(line: &str) -> Result<(InstructionType, Range<u16>, Range<u
         _ => bail!("unknown instruction type: {line}"),
     };
     let [x1, y1, x2, y2] = input::integers(line);
+
+    #[allow(clippy::range_plus_one)]
     Ok((typ, x1..x2 + 1, y1..y2 + 1))
 }
 

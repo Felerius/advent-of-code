@@ -1,19 +1,16 @@
 use utils::input;
 
 pub(crate) fn run(input: &str) -> (u64, u64) {
-    input
-        .lines()
-        .fold((0, 0), |(part1, part2), line| {
-            let mut nums: [u64; 3] = input::integers(line);
-            nums.sort_unstable();
-            let [a, b, c] = nums;
+    input.lines().fold((0, 0), |(part1, part2), line| {
+        let mut nums: [u64; 3] = input::integers(line);
+        nums.sort_unstable();
+        let [a, b, c] = nums;
 
-            (
-                part1 + 3 * a * b + 2 * (a * c + b * c),
-                part2 + 2 * (a + b) + a * b * c,
-            )
-        })
-        .into()
+        (
+            part1 + 3 * a * b + 2 * (a * c + b * c),
+            part2 + 2 * (a + b) + a * b * c,
+        )
+    })
 }
 
 #[cfg(test)]

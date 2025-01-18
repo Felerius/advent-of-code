@@ -2,7 +2,7 @@ use anyhow::Result;
 use itertools::Itertools;
 
 pub(crate) fn run(input: &str) -> Result<(u64, u64)> {
-    let nums: Vec<_> = input.lines().map(|line| line.parse()).try_collect()?;
+    let nums: Vec<_> = input.lines().map(str::parse).try_collect()?;
     let sum: usize = nums.iter().sum();
 
     // The inputs in this problem are nice s.t. you can always partition the
