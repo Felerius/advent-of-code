@@ -27,7 +27,7 @@ pub(crate) fn run(input: &str) -> Result<(u32, u32)> {
 
 #[allow(dead_code)]
 fn run_interpreted(input: &str) -> Result<(u32, u32)> {
-    let program: Vec<_> = input.lines().map(|l| l.parse()).try_collect()?;
+    let program: Vec<_> = input.lines().map(str::parse).try_collect()?;
 
     let mut vm = VirtualMachine::<4>::new();
     let part1 = vm.execute(&program)?;

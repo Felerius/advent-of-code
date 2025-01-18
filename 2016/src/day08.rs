@@ -7,10 +7,8 @@ pub(crate) fn run(input: &str) -> Result<(usize, ArrayString<10>)> {
     for line in input.lines() {
         let [a, b] = input::integers(line);
         if line.starts_with("rect") {
-            for y in 0..b {
-                for x in 0..a {
-                    grid[y][x] = true;
-                }
+            for row in &mut grid[..b] {
+                row[..a].fill(true);
             }
         } else if line[7..].starts_with("row") {
             grid[a].rotate_right(b);

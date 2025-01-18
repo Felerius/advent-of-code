@@ -2,15 +2,15 @@ use std::str::FromStr;
 
 use anyhow::{bail, Context, Error, Result};
 
-pub type Integer = u32;
-pub type JumpOffset = i16;
+pub(crate) type Integer = u32;
+pub(crate) type JumpOffset = i16;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct Register(u8);
+pub(crate) struct Register(u8);
 
 impl Register {
-    pub const A: Self = Self(0);
-    pub const C: Self = Self(2);
+    pub(crate) const A: Self = Self(0);
+    pub(crate) const C: Self = Self(2);
 }
 
 impl FromStr for Register {
@@ -25,7 +25,7 @@ impl FromStr for Register {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum Source {
+pub(crate) enum Source {
     Immediate(Integer),
     Register(Register),
 }
@@ -43,7 +43,7 @@ impl FromStr for Source {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum Instruction {
+pub(crate) enum Instruction {
     Copy(Source, Register),
     Increment(Register),
     Decrement(Register),
@@ -94,28 +94,28 @@ where
 }
 
 #[derive(Debug, Clone)]
-pub struct VirtualMachine<const N: usize> {
+pub(crate) struct VirtualMachine<const N: usize> {
     registers: [Integer; N],
 }
 
 impl<const N: usize> VirtualMachine<N> {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self { registers: [0; N] }
     }
 
-    pub fn set(&mut self, register: Register, value: Integer) {
+    pub(crate) fn set(&mut self, register: Register, value: Integer) {
         self.registers[usize::from(register.0)] = value;
     }
 
-    pub fn read(&self, register: Register) -> Integer {
+    pub(crate) fn read(&self, register: Register) -> Integer {
         self.registers[usize::from(register.0)]
     }
 
-    pub fn reset(&mut self) {
+    pub(crate) fn reset(&mut self) {
         self.registers = [0; N];
     }
 
-    pub fn execute(&mut self, program: &[Instruction]) -> Result<Integer> {
+    pub(crate) fn execute(&mut self, program: &[Instruction]) -> Result<Integer> {
         let mut pc = 0;
         while let Some(&instr) = program.get(pc) {
             let mut jump = None;

@@ -1,6 +1,5 @@
 use std::fmt::{self, Display, Formatter};
 
-use anyhow::Result;
 use utils::hash::{FastHashCollectionExt, FastHashSet};
 
 const NAMES: [(&str, &str); 5] = [
@@ -11,7 +10,7 @@ const NAMES: [(&str, &str); 5] = [
     ("plutonium generator", "plutonium-compatible microchip"),
 ];
 
-pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
+pub(crate) fn run(input: &str) -> (usize, usize) {
     let mut initial_state1 = State {
         floors: [(0, 0); 4],
         elevator: 0,
@@ -29,11 +28,11 @@ pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
     let part1 = find_shortest_solution::<5, 35>(initial_state1);
 
     let mut initial_state2 = initial_state1;
-    initial_state2.floors[0].0 |= 0b1100000;
-    initial_state2.floors[0].1 |= 0b1100000;
+    initial_state2.floors[0].0 |= 0b110_0000;
+    initial_state2.floors[0].1 |= 0b110_0000;
     let part2 = find_shortest_solution::<7, 63>(initial_state2);
 
-    Ok((part1, part2))
+    (part1, part2)
 }
 fn find_shortest_solution<const N: usize, const M: usize>(initial_state: State) -> usize {
     let all_bits = u8::MAX >> (8 - N);

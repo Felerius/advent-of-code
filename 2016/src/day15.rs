@@ -21,6 +21,7 @@ fn to_eq(x0: i64, m: i64, i: usize) -> (i64, i64) {
     (x, m)
 }
 
+#[allow(clippy::many_single_char_names)]
 fn combine_equations((mut a, m): (i64, i64), (mut b, n): (i64, i64)) -> Option<(i64, i64)> {
     if n > m {
         return combine_equations((b, n), (a, m));

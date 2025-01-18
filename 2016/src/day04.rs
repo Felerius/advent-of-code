@@ -57,7 +57,7 @@ pub(crate) fn run(input: &str) -> Result<(u32, u16)> {
             sorted[coc[ci]] = b'a' + i as u8;
         }
 
-        if &sorted[..5] == &line[len - 6..len - 1] {
+        if sorted[..5] == line[len - 6..len - 1] {
             let sector_id = 100 * u16::from(line[len - 10] - b'0')
                 + 10 * u16::from(line[len - 9] - b'0')
                 + u16::from(line[len - 8] - b'0');

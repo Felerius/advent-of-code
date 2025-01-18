@@ -60,6 +60,7 @@ cast_possible_truncation = "allow"
 cast_possible_wrap = "allow"
 cast_precision_loss = "allow"
 cast_sign_loss = "allow"
+match_on_vec_items = "allow"
 
 [profile.release]
 lto = "thin"

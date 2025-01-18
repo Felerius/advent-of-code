@@ -1,20 +1,19 @@
-use anyhow::Result;
 use utils::md5::Stack;
 
-pub(crate) fn run(input: &str) -> Result<(String, usize)> {
+pub(crate) fn run(input: &str) -> (String, usize) {
     let mut part1 = None::<String>;
     let mut part2 = 0;
     let mut stack = Stack::new();
     stack.push_slice(input.as_bytes());
     dfs(0, 0, &mut stack, &mut |stack| {
         let len = stack.bytes().len() - input.len();
-        if len < part1.as_ref().map_or(usize::MAX, |s| s.len()) {
+        if len < part1.as_ref().map_or(usize::MAX, String::len) {
             part1 = Some(String::from_utf8(stack.bytes()[input.len()..].to_vec()).unwrap());
         }
         part2 = part2.max(len);
     });
 
-    Ok((part1.expect("no solution found"), part2))
+    (part1.expect("no solution found"), part2)
 }
 
 fn dfs(x: u8, y: u8, md5_stack: &mut Stack, callback: &mut impl FnMut(&Stack)) {
@@ -58,7 +57,7 @@ mod tests {
             ("ulqzkmiv", ("DRURDRUDDLLDLUURRDULRLDUUDDDRR", 830)),
         ];
         for (input, (expected1, expected2)) in cases {
-            let (actual1, actual2) = run(input).unwrap();
+            let (actual1, actual2) = run(input);
             assert_eq!(actual1, expected1);
             assert_eq!(actual2, expected2);
         }

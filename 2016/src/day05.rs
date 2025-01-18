@@ -39,7 +39,7 @@ pub(crate) fn run(input: &str) -> Result<(String, String)> {
 
 fn to_hex_str(digits: impl IntoIterator<Item = u8>) -> String {
     let num = digits.into_iter().fold(0_u32, |x, d| x << 4 | u32::from(d));
-    format!("{:08x}", num)
+    format!("{num:08x}")
 }
 
 fn prepare_block(input: &str, mut num: usize) -> SingleBlock {

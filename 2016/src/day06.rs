@@ -8,7 +8,7 @@ pub(crate) fn run(input: &str) -> Result<(ArrayString<LEN>, ArrayString<LEN>)> {
     let line_len = lines.peek().context("empty input")?.len();
     ensure!(line_len <= LEN, "line length too long");
 
-    let counts = ArrayVec::<_, LEN>::from_iter((0..line_len).map(|_| [0; 26]));
+    let counts: ArrayVec<_, LEN> = (0..line_len).map(|_| [0; 26]).collect();
     let counts = lines.fold(counts, |mut counts, line| {
         for (i, c) in line.bytes().enumerate() {
             counts[i][usize::from(c - b'a')] += 1;
