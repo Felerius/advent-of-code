@@ -4,7 +4,7 @@ use anyhow::{Context, Result};
 use itertools::Itertools;
 use utils::hash::{FastHashCollectionExt, FastHashMap, FastHashSet};
 
-pub fn run(input: &str) -> Result<(usize, usize)> {
+pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
     let mut lines = input.lines();
     let input = lines.next_back().context("empty input")?;
     let mut cnf = ChomskyNormalForm {

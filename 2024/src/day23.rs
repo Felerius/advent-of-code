@@ -7,7 +7,7 @@ const N: usize = 26 * 26;
 
 type AdjBitset = TinyBitSet<u64, 11>;
 
-pub fn run(input: &str) -> (usize, String) {
+pub(crate) fn run(input: &str) -> (usize, String) {
     let mut adj = [AdjBitset::new(); N];
     for line in input.lines() {
         let line = line.as_bytes();

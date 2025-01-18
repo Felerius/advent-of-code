@@ -3,7 +3,7 @@ use arrayvec::{ArrayString, ArrayVec};
 
 const LEN: usize = 8;
 
-pub fn run(input: &str) -> Result<(ArrayString<LEN>, ArrayString<LEN>)> {
+pub(crate) fn run(input: &str) -> Result<(ArrayString<LEN>, ArrayString<LEN>)> {
     let mut lines = input.lines().peekable();
     let line_len = lines.peek().context("empty input")?.len();
     ensure!(line_len <= LEN, "line length too long");

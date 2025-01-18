@@ -5,7 +5,7 @@ use utils::input;
 const WIDTH: usize = 71;
 const HEIGHT: usize = 71;
 
-pub fn run(input: &str) -> (usize, String) {
+pub(crate) fn run(input: &str) -> (usize, String) {
     let bytes: Vec<_> = input
         .lines()
         .map(|line| input::integers::<usize, 2>(line))

@@ -1,7 +1,7 @@
 use itertools::Itertools;
 use utils::input;
 
-pub fn run(input: &str) -> (usize, usize) {
+pub(crate) fn run(input: &str) -> (usize, usize) {
     input
         .lines()
         .tuples()

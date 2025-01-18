@@ -4,7 +4,7 @@ use anyhow::Result;
 use array_const_fn_init::array_const_fn_init;
 use utils::hash::{FastHashCollectionExt, FastHashMap};
 
-pub fn run(input: &str) -> Result<(usize, usize)> {
+pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
     let mut cur_cnts = FastHashMap::<_, usize>::with_capacity(4096);
     let mut prev_cnts = FastHashMap::with_capacity(4096);
     for s in input.split_ascii_whitespace() {

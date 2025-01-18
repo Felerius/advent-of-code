@@ -2,7 +2,7 @@ use rayon::iter::{IndexedParallelIterator, IntoParallelIterator, ParallelIterato
 
 const NUM_SEQ: usize = 19_usize.pow(4);
 
-pub fn run(input: &str) -> (u64, u32) {
+pub(crate) fn run(input: &str) -> (u64, u32) {
     let lines: Vec<_> = input.lines().collect();
     let (part1, gain) = lines
         .into_par_iter()

@@ -1,4 +1,4 @@
-pub fn run(input: &str) -> (usize, usize) {
+pub(crate) fn run(input: &str) -> (usize, usize) {
     input
         .lines()
         .map(|line| {

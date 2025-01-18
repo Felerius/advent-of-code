@@ -1,4 +1,4 @@
-pub fn run(input: &str) -> (i32, usize) {
+pub(crate) fn run(input: &str) -> (i32, usize) {
     let (part1, part2) =
         input
             .bytes()

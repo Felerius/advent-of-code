@@ -2,7 +2,7 @@ use itertools::Itertools;
 use joinery::Joinable;
 use utils::input;
 
-pub fn run(input: &str) -> (String, u64) {
+pub(crate) fn run(input: &str) -> (String, u64) {
     run_testable(input, false)
 }
 

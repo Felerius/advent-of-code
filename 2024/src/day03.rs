@@ -1,4 +1,4 @@
-pub fn run(input: &str) -> (u32, u32) {
+pub(crate) fn run(input: &str) -> (u32, u32) {
     let (part1, part2, _) = itertools::kmerge(
         ["mul(", "do()", "don't()"].map(|s| input.match_indices(s)),
     )

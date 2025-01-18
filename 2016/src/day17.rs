@@ -1,7 +1,7 @@
 use anyhow::Result;
 use utils::md5::Stack;
 
-pub fn run(input: &str) -> Result<(String, usize)> {
+pub(crate) fn run(input: &str) -> Result<(String, usize)> {
     let mut part1 = None::<String>;
     let mut part2 = 0;
     let mut stack = Stack::new();

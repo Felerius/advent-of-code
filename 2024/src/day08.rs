@@ -3,7 +3,7 @@ use std::array;
 use itertools::Itertools;
 use num::Integer;
 
-pub fn run(input: &str) -> (usize, usize) {
+pub(crate) fn run(input: &str) -> (usize, usize) {
     let grid: Vec<_> = input.lines().map(|line| line.as_bytes()).collect();
     let height = grid.len();
     let width = grid[0].len();

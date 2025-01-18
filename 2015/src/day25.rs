@@ -1,7 +1,7 @@
 use anyhow::Result;
 use utils::input;
 
-pub fn run(input: &str) -> Result<(u64, u64)> {
+pub(crate) fn run(input: &str) -> Result<(u64, u64)> {
     let [row, col] = input::integers::<u32, 2>(input);
     Ok((solve(row - 1, col - 1), 0))
 }

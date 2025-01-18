@@ -2,7 +2,7 @@ use arrayvec::ArrayString;
 
 const LEN: usize = 8;
 
-pub fn run(input: &str) -> (ArrayString<LEN>, ArrayString<LEN>) {
+pub(crate) fn run(input: &str) -> (ArrayString<LEN>, ArrayString<LEN>) {
     let input = to_int(input);
     let part1 = next(input);
     let part2 = next(part1 + 1);

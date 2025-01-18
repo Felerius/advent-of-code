@@ -26,7 +26,7 @@ const RING_COMBOS: &[(u32, u32, u32)] = &[
     (180, 3, 3),
 ];
 
-pub fn run(input: &str) -> Result<(u32, u32)> {
+pub(crate) fn run(input: &str) -> Result<(u32, u32)> {
     let [boss_hp, boss_dmg, boss_ac] = input::integers::<u32, 3>(input);
     let solution = itertools::iproduct!(WEAPONS, ARMORS, RING_COMBOS)
         .map(|((c1, dmg1), (c2, ac1), (c3, dmg2, ac2))| {

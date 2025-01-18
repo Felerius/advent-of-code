@@ -28,7 +28,7 @@ const GRAPH2: &[(u8, [usize; 4])] = &[
     (b'D', [12, 10, 12, 12]),
 ];
 
-pub fn run(input: &str) -> Result<(String, String)> {
+pub(crate) fn run(input: &str) -> Result<(String, String)> {
     let mut v1 = 4;
     let mut v2 = 4;
     let mut part1 = String::new();

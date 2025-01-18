@@ -5,7 +5,7 @@ use utils::num::bits;
 
 const MAX: usize = 8;
 
-pub fn run(input: &str) -> Result<(i64, i64)> {
+pub(crate) fn run(input: &str) -> Result<(i64, i64)> {
     let (n, matrix) = parse(input)?;
     assert!(n > 2);
     let mut dp = [[[i64::MIN; MAX]; MAX]; 1 << MAX];

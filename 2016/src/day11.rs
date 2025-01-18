@@ -11,7 +11,7 @@ const NAMES: [(&str, &str); 5] = [
     ("plutonium generator", "plutonium-compatible microchip"),
 ];
 
-pub fn run(input: &str) -> Result<(usize, usize)> {
+pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
     let mut initial_state1 = State {
         floors: [(0, 0); 4],
         elevator: 0,

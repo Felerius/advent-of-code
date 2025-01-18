@@ -2,7 +2,7 @@ use std::collections::VecDeque;
 
 use anyhow::Result;
 
-pub fn run(input: &str) -> Result<(u8, usize)> {
+pub(crate) fn run(input: &str) -> Result<(u8, usize)> {
     let num: usize = input.parse()?;
     let mut grid = [[false; 51]; 51];
     for (y, row) in grid.iter_mut().enumerate() {

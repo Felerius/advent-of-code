@@ -9,7 +9,7 @@ type RowBitSet1 = TinyBitSet<u64, 1>;
 type RowBitSet2 = TinyBitSet<u128, 1>;
 type RowArrayVec<T> = ArrayVec<T, 100>;
 
-pub fn run(input: &str) -> (usize, usize) {
+pub(crate) fn run(input: &str) -> (usize, usize) {
     let mut lines = input.lines().map(|line| line.as_bytes());
     let mut robot = (0, 0);
     let mut width = 0;

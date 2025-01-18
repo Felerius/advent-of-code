@@ -2,7 +2,7 @@ use std::iter;
 
 use anyhow::Result;
 
-pub fn run(input: &str) -> Result<(usize, usize)> {
+pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
     // The input code calculates the length of the Collatz sequence for two
     // values. We extract the input values and calculate the lengths manually.
     let mut lines = input.lines().skip(1);

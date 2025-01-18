@@ -3,7 +3,7 @@ use num::integer::Roots;
 
 const BLOCK: usize = 1 << 16;
 
-pub fn run(input: &str) -> Result<(usize, usize)> {
+pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
     let target: usize = input.parse()?;
     let mut data = Box::new([0; BLOCK]);
     let part1 = part1(target.div_ceil(10), &mut data);

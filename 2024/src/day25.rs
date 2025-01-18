@@ -2,7 +2,7 @@ use std::array;
 
 use itertools::Itertools;
 
-pub fn run(input: &str) -> (usize, u8) {
+pub(crate) fn run(input: &str) -> (usize, u8) {
     let mut locks = [[[[[0; 6]; 6]; 6]; 6]; 6];
     let mut keys = Vec::new();
     let line_groups = input

@@ -2,7 +2,7 @@ use anyhow::Result;
 use num::Integer;
 use utils::input;
 
-pub fn run(input: &str) -> Result<(usize, u16)> {
+pub(crate) fn run(input: &str) -> Result<(usize, u16)> {
     run_parameterized(input, 101, 103)
 }
 

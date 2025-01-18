@@ -1,7 +1,7 @@
 use anyhow::{bail, Result};
 use utils::hash::FastHashSet;
 
-pub fn run(input: &str) -> Result<(usize, usize)> {
+pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
     let mut pos1 = (0, 0);
     let mut pos2 = [(0, 0), (0, 0)];
     let mut part1 = FastHashSet::from_iter([(0, 0)]);

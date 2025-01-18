@@ -1,6 +1,6 @@
 use utils::input;
 
-pub fn run(input: &str) -> (i64, i64) {
+pub(crate) fn run(input: &str) -> (i64, i64) {
     let ingredients: Vec<[i32; 5]> = input.lines().map(input::signed_integers).collect();
     let [ing1, ing2, ing3, ing4] = ingredients.try_into().expect("4 ingredients required");
 

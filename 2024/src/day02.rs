@@ -1,6 +1,6 @@
 use itertools::Itertools;
 
-pub fn run(input: &str) -> (usize, usize) {
+pub(crate) fn run(input: &str) -> (usize, usize) {
     input.trim().lines().fold((0, 0), |(part1, part2), line| {
         let nums: Vec<_> = line
             .split_ascii_whitespace()

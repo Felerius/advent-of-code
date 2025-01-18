@@ -1,7 +1,7 @@
 use anyhow::{Context, Result};
 use utils::num::bits;
 
-pub fn run(input: &str) -> Result<(u32, u32)> {
+pub(crate) fn run(input: &str) -> Result<(u32, u32)> {
     let mut adj = [[0; 8]; 8];
     let mut cities = [""; 8];
     let mut num_cities = 0;

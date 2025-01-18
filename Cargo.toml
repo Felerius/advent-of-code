@@ -1,5 +1,6 @@
 [workspace]
-members = ["20*", "harness", "utils"]
+members = ["20*", "cli", "collect", "utils"]
+default-members = ["cli"]
 resolver = "2"
 
 [workspace.package]
@@ -12,9 +13,11 @@ array-const-fn-init = "0.1.1"
 arrayvec = "0.7.6"
 clap = { version = "4.5.20", features = ["derive"] }
 concat-idents = "1.1.5"
+console = "0.15.10"
 directories = "5.0.1"
 indicatif = "0.17.9"
 itertools = "0.13.0"
+jiff = "0.1.16"
 joinery = "3.1.0"
 nom = "7.1.3"
 num = "0.4.3"
@@ -27,11 +30,14 @@ reqwest = { version = "0.12.8", features = ["blocking"] }
 rustc-hash = "2.0.0"
 tinybitset = "0.0.2"
 
-harness = { path = "harness" }
+aoc2015 = { path = "2015" }
+aoc2016 = { path = "2016" }
+aoc2024 = { path = "2024" }
+collect = { path = "collect" }
 utils = { path = "utils" }
 
 [workspace.lints.rust]
-unused = "warn"
+unused = { level = "warn", priority = -1 }
 macro_use_extern_crate = "warn"
 meta_variable_misuse = "warn"
 missing_copy_implementations = "warn"

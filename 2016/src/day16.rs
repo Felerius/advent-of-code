@@ -1,6 +1,6 @@
 use anyhow::Result;
 
-pub fn run(input: &str) -> Result<(String, String)> {
+pub(crate) fn run(input: &str) -> Result<(String, String)> {
     let init: Vec<_> = input.bytes().map(|b| b - b'0').collect();
     let part1 = checksum(generate(272, &init));
     let part2 = checksum(generate(35_651_584, &init));

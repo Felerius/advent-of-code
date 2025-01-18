@@ -1,6 +1,6 @@
 use utils::input;
 
-pub fn run(input: &str) -> (u64, u64) {
+pub(crate) fn run(input: &str) -> (u64, u64) {
     input
         .lines()
         .fold((0, 0), |(part1, part2), line| {

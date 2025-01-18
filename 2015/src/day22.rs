@@ -4,7 +4,7 @@ use anyhow::Result;
 use arrayvec::ArrayVec;
 use utils::{hash::FastHashMap, input};
 
-pub fn run(input: &str) -> Result<(u16, u16)> {
+pub(crate) fn run(input: &str) -> Result<(u16, u16)> {
     let [boss_hp, boss_dmg] = input::integers(input);
     let part1 = solve(boss_hp, boss_dmg, 0);
     let part2 = solve(boss_hp, boss_dmg, 1);

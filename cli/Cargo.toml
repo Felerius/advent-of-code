@@ -1,17 +1,23 @@
 [package]
-name = "harness"
+name = "cli"
 version.workspace = true
 edition.workspace = true
 
 [dependencies]
 anyhow.workspace = true
 clap.workspace = true
-concat-idents.workspace = true
+console.workspace = true
 directories.workspace = true
 indicatif.workspace = true
+itertools.workspace = true
+jiff.workspace = true
 once_cell.workspace = true
-owo-colors.workspace = true
 reqwest.workspace = true
+
+aoc2015.workspace = true
+aoc2016.workspace = true
+aoc2024.workspace = true
+collect.workspace = true
 
 [lints]
 workspace = true

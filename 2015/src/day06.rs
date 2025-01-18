@@ -6,7 +6,7 @@ use utils::input;
 
 const SIZE: usize = 1005;
 
-pub fn run(input: &str) -> Result<(usize, u64)> {
+pub(crate) fn run(input: &str) -> Result<(usize, u64)> {
     let instrs: Vec<_> = input.lines().map(parse_instruction).try_collect()?;
     let (xses, x_map) =
         calculate_coordinate_compression(instrs.iter().map(|(_, x_range, _)| x_range.clone()));

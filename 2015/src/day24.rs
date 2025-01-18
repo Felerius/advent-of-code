@@ -1,7 +1,7 @@
 use anyhow::Result;
 use itertools::Itertools;
 
-pub fn run(input: &str) -> Result<(u64, u64)> {
+pub(crate) fn run(input: &str) -> Result<(u64, u64)> {
     let nums: Vec<_> = input.lines().map(|line| line.parse()).try_collect()?;
     let sum: usize = nums.iter().sum();
 

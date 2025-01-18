@@ -1,6 +1,6 @@
 use anyhow::{Context, Result};
 
-pub fn run(input: &str) -> Result<(usize, usize)> {
+pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
     let part1 = decompressed_length(input, false)?;
     let part2 = decompressed_length(input, true)?;
     Ok((part1, part2))

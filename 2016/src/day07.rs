@@ -1,6 +1,6 @@
 use anyhow::Result;
 
-pub fn run(input: &str) -> Result<(usize, usize)> {
+pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
     let mut abas = [[[usize::MAX; 26]; 26]; 2];
     let mut part1 = 0;
     let mut part2 = 0;

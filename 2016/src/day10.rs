@@ -1,7 +1,7 @@
 use anyhow::{bail, Context, Result};
 use utils::input;
 
-pub fn run(input: &str) -> Result<(u8, u32)> {
+pub(crate) fn run(input: &str) -> Result<(u8, u32)> {
     let mut state = State::default();
     for line in input.lines() {
         if line.starts_with("value") {

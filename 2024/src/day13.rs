@@ -3,7 +3,7 @@ use utils::input;
 
 const OFFSET: i64 = 10_000_000_000_000;
 
-pub fn run(input: &str) -> (i64, i64) {
+pub(crate) fn run(input: &str) -> (i64, i64) {
     input.lines().filter(|line| !line.is_empty()).tuples().fold(
         (0, 0),
         |(part1, part2), (l1, l2, l3)| {

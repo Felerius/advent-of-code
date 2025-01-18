@@ -2,7 +2,7 @@ use std::mem;
 
 use itertools::Itertools;
 
-pub fn run(input: &str) -> (usize, usize) {
+pub(crate) fn run(input: &str) -> (usize, usize) {
     let mut initial_grid = [[false; 102]; 102];
     for (i, lines) in input.lines().enumerate() {
         for (j, c) in lines.bytes().enumerate() {

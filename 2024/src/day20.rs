@@ -1,6 +1,6 @@
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 
-pub fn run(input: &str) -> (usize, usize) {
+pub(crate) fn run(input: &str) -> (usize, usize) {
     run_testable(input, 100)
 }
 

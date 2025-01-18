@@ -6,7 +6,7 @@ use tinybitset::TinyBitSet;
 const ALPHABET: usize = 5;
 const MAX_PATTERN_LEN: usize = 8;
 
-pub fn run(input: &str) -> (usize, usize) {
+pub(crate) fn run(input: &str) -> (usize, usize) {
     let mut lines = input.lines();
     let mut aho_corasick = AhoCorasick::new();
     for pattern in lines.next().unwrap().split(", ") {

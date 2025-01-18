@@ -1,6 +1,6 @@
 use anyhow::{bail, Context, Result};
 
-pub fn run(input: &str) -> Result<(usize, usize)> {
+pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
     let mut part1 = None;
     let mut part2 = None;
     for (i, line) in input.lines().enumerate() {

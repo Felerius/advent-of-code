@@ -1,7 +1,7 @@
 use anyhow::{ensure, Context, Result};
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 
-pub fn run(input: &str) -> Result<(usize, usize)> {
+pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
     let grid: Vec<_> = input.lines().map(|l| l.as_bytes().to_vec()).collect();
     let height = grid.len();
     let width = grid[0].len();

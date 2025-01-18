@@ -4,7 +4,7 @@ use utils::input;
 
 use crate::assembunny::{Register, VirtualMachine};
 
-pub fn run(input: &str) -> Result<(u32, u32)> {
+pub(crate) fn run(input: &str) -> Result<(u32, u32)> {
     let mut lines = input.lines();
     let [index1] = input::integers(lines.nth(2).context("unexpected eof")?);
     let [off] = input::integers(lines.nth(2).context("unexpected eof")?);

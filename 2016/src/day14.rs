@@ -4,7 +4,7 @@ use anyhow::{anyhow, Result};
 use panic_message::panic_message;
 use utils::md5::{Digest, SingleBlock};
 
-pub fn run(input: &str) -> Result<(usize, usize)> {
+pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
     let mut searcher1 = Searcher::new();
     for n in 0.. {
         if n >= searcher1.stop_bound {

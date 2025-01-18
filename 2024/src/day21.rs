@@ -2,7 +2,7 @@ use std::iter;
 
 use itertools::Itertools;
 
-pub fn run(input: &str) -> (usize, usize) {
+pub(crate) fn run(input: &str) -> (usize, usize) {
     let mut directional_matrices = [[[1; 5]; 5]; 26];
     for i in 1..26 {
         directional_matrices[i] = compute_transition_table(

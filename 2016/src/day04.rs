@@ -29,7 +29,7 @@ const ROOM_ROTATIONS: [&[u8]; 26] = [
     b"opsuiqpmf-pckfdu-tupsbhf",
 ];
 
-pub fn run(input: &str) -> Result<(u32, u16)> {
+pub(crate) fn run(input: &str) -> Result<(u32, u16)> {
     let mut part1 = 0;
     let mut part2 = None;
     for line in input.lines() {
