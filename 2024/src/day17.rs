@@ -74,7 +74,7 @@ fn simulate(program: &[u8], mut registers: [u64; 3], mut out: impl FnMut(u8) -> 
             0 => {
                 registers[0] = registers[0]
                     .checked_shr(combo(registers) as u32)
-                    .unwrap_or(0)
+                    .unwrap_or(0);
             }
             1 => registers[1] ^= u64::from(operand),
             2 => registers[1] = combo(registers) % 8,
@@ -93,12 +93,12 @@ fn simulate(program: &[u8], mut registers: [u64; 3], mut out: impl FnMut(u8) -> 
             6 => {
                 registers[1] = registers[0]
                     .checked_shr(combo(registers) as u32)
-                    .unwrap_or(0)
+                    .unwrap_or(0);
             }
             7 => {
                 registers[2] = registers[0]
                     .checked_shr(combo(registers) as u32)
-                    .unwrap_or(0)
+                    .unwrap_or(0);
             }
             _ => panic!("Invalid opcode: {opcode}"),
         }
@@ -134,6 +134,6 @@ Program: 0,3,5,4,3,0";
 
     #[test]
     fn part2() {
-        assert_eq!(run(INPUT2).1, 117440);
+        assert_eq!(run(INPUT2).1, 117_440);
     }
 }

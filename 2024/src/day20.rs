@@ -5,7 +5,7 @@ pub(crate) fn run(input: &str) -> (usize, usize) {
 }
 
 fn run_testable(input: &str, shortcut_threshold: usize) -> (usize, usize) {
-    let grid: Vec<_> = input.lines().map(|line| line.as_bytes()).collect();
+    let grid: Vec<_> = input.lines().map(str::as_bytes).collect();
     let height = grid.len();
     let width = grid[0].len();
     let (sy, sx) = itertools::iproduct!(0..height, 0..width)

@@ -143,7 +143,7 @@ fn parse_graph(input: &str) -> (FastHashMap<Wire, Vec<Gate>>, FastHashMap<Wire, 
     let input = lines
         .by_ref()
         .take_while(|line| !line.is_empty())
-        .map(|line| (Wire::from_str(&line[..3]), line.ends_with("1")))
+        .map(|line| (Wire::from_str(&line[..3]), line.ends_with('1')))
         .collect();
 
     let mut adj = FastHashMap::<_, Vec<_>>::new();

@@ -42,9 +42,9 @@ pub(crate) fn run(input: &str) -> (u64, u32) {
 }
 
 fn next(mut x: u32) -> u32 {
-    x = (x ^ (x << 6)) & 0xFFFFFF;
+    x = (x ^ (x << 6)) & 0xFF_FFFF;
     x ^= x >> 5;
-    (x ^ (x << 11)) & 0xFFFFFF
+    (x ^ (x << 11)) & 0xFF_FFFF
 }
 
 #[cfg(test)]
@@ -56,8 +56,8 @@ mod tests {
     #[test]
     fn next() {
         let expected = [
-            123, 15887950, 16495136, 527345, 704524, 1553684, 12683156, 11100544, 12249484,
-            7753432, 5908254,
+            123, 15_887_950, 16_495_136, 527_345, 704_524, 1_553_684, 12_683_156, 11_100_544,
+            12_249_484, 7_753_432, 5_908_254,
         ];
         for (from, to) in expected.into_iter().tuple_windows() {
             assert_eq!(super::next(from), to, "{from} -> {to}");
@@ -66,7 +66,7 @@ mod tests {
 
     #[test]
     fn part1() {
-        assert_eq!(run("1\n10\n100\n2024").0, 37327623);
+        assert_eq!(run("1\n10\n100\n2024").0, 37_327_623);
     }
 
     #[test]

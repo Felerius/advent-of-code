@@ -7,7 +7,7 @@ pub(crate) fn run(input: &str) -> (usize, u8) {
     let mut keys = Vec::new();
     let line_groups = input
         .lines()
-        .map(|line| line.as_bytes())
+        .map(str::as_bytes)
         .filter(|line| !line.is_empty())
         .tuples();
     for (l1, l2, l3, l4, l5, l6, _) in line_groups {

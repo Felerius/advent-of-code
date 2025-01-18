@@ -9,8 +9,8 @@ pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
         .find(|&(y, x)| grid[y][x] == b'^')
         .context("no start")?;
     let mut seen = vec![vec![0; width]; height];
-    let loop1 = simulate(&grid, y0, x0, &mut seen);
-    ensure!(!loop1, "input loops already");
+    let input_loops = simulate(&grid, y0, x0, &mut seen);
+    ensure!(!input_loops, "input loops already");
 
     let candidates: Vec<_> = itertools::iproduct!(0..height, 0..width)
         .filter(|&(y, x)| seen[y][x] != 0 && (y, x) != (y0, x0))
@@ -27,7 +27,7 @@ pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
                 }
 
                 grid[y][x] = b'#';
-                let loops = simulate(&grid, y0, x0, seen);
+                let loops = simulate(grid, y0, x0, seen);
                 grid[y][x] = b'.';
 
                 loops

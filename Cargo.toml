@@ -50,12 +50,15 @@ unused_lifetimes = "warn"
 unused_qualifications = "warn"
 
 [workspace.lints.clippy]
-complexity = "warn"
-correctness = "warn"
-perf = "warn"
-style = "warn"
-suspicious = "warn"
-pedantic = "warn"
+complexity = { level = "warn", priority = -1 }
+correctness = { level = "warn", priority = -1 }
+perf = { level = "warn", priority = -1 }
+style = { level = "warn", priority = -1 }
+suspicious = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+cast_possible_truncation = "allow"
+cast_possible_wrap = "allow"
+cast_sign_loss = "allow"
 
 [profile.release]
 lto = "thin"

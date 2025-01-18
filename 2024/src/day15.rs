@@ -10,7 +10,7 @@ type RowBitSet2 = TinyBitSet<u128, 1>;
 type RowArrayVec<T> = ArrayVec<T, 100>;
 
 pub(crate) fn run(input: &str) -> (usize, usize) {
-    let mut lines = input.lines().map(|line| line.as_bytes());
+    let mut lines = input.lines().map(str::as_bytes);
     let mut robot = (0, 0);
     let mut width = 0;
     let (walls1, boxes1, grid2): (Vec<_>, Vec<_>, Vec<_>) = lines
@@ -81,6 +81,8 @@ struct State1 {
 impl State1 {
     fn process_move(&mut self, direction: Direction) {
         let robot_target = direction.offset(self.robot, 1);
+
+        #[allow(clippy::maybe_infinite_iter)]
         let end = (1..)
             .map(|i| direction.offset(self.robot, i))
             .find(|&(x, y)| self.walls[y][x] || !self.boxes[y][x])
@@ -134,6 +136,8 @@ impl State2 {
     fn process_move(&mut self, direction: Direction) {
         if matches!(direction, Direction::Left | Direction::Right) {
             let robot_target = direction.offset(self.robot, 1);
+
+            #[allow(clippy::maybe_infinite_iter)]
             let end = (1..)
                 .map(|i| direction.offset(self.robot, i))
                 .find(|&(x, y)| matches!(self.grid[y][x], Field::Wall | Field::Empty))

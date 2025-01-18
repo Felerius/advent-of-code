@@ -82,7 +82,7 @@ fn compute_transition_table<const N: usize>(
                     let expanded_path = path
                         .into_iter()
                         .flat_map(|(key, cnt)| iter::repeat_n(key, cnt));
-                    compute_cost(DirectionalKey::A, expanded_path, &base)
+                    compute_cost(DirectionalKey::A, expanded_path, base)
                 })
                 .min()
                 .unwrap()
@@ -122,9 +122,9 @@ impl DirectionalKey {
     const FORBIDDEN_CORNER: Point = Point { x: 0, y: 0 };
 }
 
-impl Into<usize> for DirectionalKey {
-    fn into(self) -> usize {
-        self as usize
+impl From<DirectionalKey> for usize {
+    fn from(val: DirectionalKey) -> Self {
+        val as usize
     }
 }
 
@@ -178,9 +178,9 @@ impl NumericKey {
     }
 }
 
-impl Into<usize> for NumericKey {
-    fn into(self) -> usize {
-        self as usize
+impl From<NumericKey> for usize {
+    fn from(val: NumericKey) -> Self {
+        val as usize
     }
 }
 
@@ -198,6 +198,6 @@ mod tests {
 
     #[test]
     fn part1() {
-        assert_eq!(run(INPUT).0, 126384);
+        assert_eq!(run(INPUT).0, 126_384);
     }
 }

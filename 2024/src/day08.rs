@@ -4,7 +4,7 @@ use itertools::Itertools;
 use num::Integer;
 
 pub(crate) fn run(input: &str) -> (usize, usize) {
-    let grid: Vec<_> = input.lines().map(|line| line.as_bytes()).collect();
+    let grid: Vec<_> = input.lines().map(str::as_bytes).collect();
     let height = grid.len();
     let width = grid[0].len();
     let to_grid_pos = |(x, y): (isize, isize)| {
@@ -42,7 +42,7 @@ pub(crate) fn run(input: &str) -> (usize, usize) {
             let antinodes1 = (0..).map_while(|i| to_grid_pos((x1 + dx * i, y1 + dy * i)));
             let antinodes2 = (1..).map_while(|i| to_grid_pos((x1 - dx * i, y1 - dy * i)));
             for (x, y) in antinodes1.chain(antinodes2) {
-                antinode[y as usize][x as usize] |= 2;
+                antinode[y][x] |= 2;
             }
         }
     }
