@@ -1,3 +1,4 @@
+#![allow(clippy::unreadable_literal, clippy::many_single_char_names)]
 use std::{
     array,
     ops::{Deref, DerefMut},
@@ -9,6 +10,7 @@ pub type Digest = [u32; 4];
 pub struct SingleBlock([u8; 64]);
 
 impl SingleBlock {
+    #[must_use]
     pub fn new(len: usize) -> Self {
         assert!(len < 56);
         let mut buffer = [0; 64];
@@ -17,6 +19,7 @@ impl SingleBlock {
         Self(buffer)
     }
 
+    #[must_use]
     pub fn digest(&self) -> Digest {
         digest_to_be(hash_block(&self.0, INIT))
     }
@@ -36,20 +39,19 @@ impl DerefMut for SingleBlock {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct Stack {
     bytes: Vec<u8>,
     prefix_digests: Vec<Digest>,
 }
 
 impl Stack {
+    #[must_use]
     pub fn new() -> Self {
-        Self {
-            bytes: Vec::new(),
-            prefix_digests: Vec::new(),
-        }
+        Self::default()
     }
 
+    #[must_use]
     pub fn bytes(&self) -> &[u8] {
         &self.bytes
     }

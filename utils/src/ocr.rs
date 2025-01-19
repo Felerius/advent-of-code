@@ -1,5 +1,6 @@
 use anyhow::{Context, Result};
 
+#[allow(clippy::unreadable_literal)]
 const CHARACTERS: [(u32, u8); 20] = [
     (0x19297a52, b'A'),
     (0x392e4a5c, b'B'),

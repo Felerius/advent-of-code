@@ -19,7 +19,7 @@ where
             input = tail;
         }
         nums.try_push(num)
-            .unwrap_or_else(|_| panic!("Expected only {} integers", N));
+            .unwrap_or_else(|_| panic!("Expected only {N} integers"));
     }
 
     nums.into_inner()
@@ -56,7 +56,7 @@ where
 
         num = if negative { -num } else { num };
         nums.try_push(num)
-            .unwrap_or_else(|_| panic!("Expected only {} integers", N));
+            .unwrap_or_else(|_| panic!("Expected only {N} integers"));
     }
 
     nums.into_inner()
