@@ -1,11 +1,13 @@
 use utils::hash::{FastHashCollectionExt, FastHashSet};
 
 pub(crate) fn run(input: &str) -> (usize, usize) {
+    let mut words = FastHashSet::with_capacity(16);
+    let mut anagrams = FastHashSet::with_capacity(16);
     input
         .lines()
         .map(|line| {
-            let mut words = FastHashSet::new();
-            let mut anagrams = FastHashSet::new();
+            words.clear();
+            anagrams.clear();
             line.split_ascii_whitespace()
                 .map(|word| {
                     let anagram = word.bytes().fold([0; 26], |mut cnt, c| {
