@@ -32,6 +32,7 @@ tinybitset = "0.0.2"
 
 aoc2015 = { path = "2015" }
 aoc2016 = { path = "2016" }
+aoc2017 = { path = "2017" }
 aoc2024 = { path = "2024" }
 collect = { path = "collect" }
 utils = { path = "utils" }

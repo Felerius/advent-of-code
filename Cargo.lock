@@ -101,6 +101,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "aoc2017"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "collect",
+ "itertools",
+]
+
+[[package]]
 name = "aoc2024"
 version = "0.1.0"
 dependencies = [
@@ -241,6 +250,7 @@ dependencies = [
  "anyhow",
  "aoc2015",
  "aoc2016",
+ "aoc2017",
  "aoc2024",
  "clap",
  "collect",

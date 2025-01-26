@@ -1,0 +1,13 @@
+[package]
+name = "aoc2017"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+itertools.workspace = true
+
+collect.workspace = true
+
+[lints]
+workspace = true
