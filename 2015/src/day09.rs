@@ -28,7 +28,7 @@ pub(crate) fn run(input: &str) -> Result<(u32, u32)> {
     }
 
     for m in 1_usize..(1 << num_cities) {
-        if m.count_ones() == 1 {
+        if m.is_power_of_two() {
             continue;
         }
 

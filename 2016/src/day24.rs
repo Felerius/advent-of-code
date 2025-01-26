@@ -46,7 +46,7 @@ pub(crate) fn run(input: &str) -> (usize, usize) {
 
     let mut dp = vec![vec![usize::MAX / 2; 1 << (num_pos - 1)]; usize::from(num_pos) - 1];
     for bs in 1_usize..1 << (num_pos - 1) {
-        if bs.count_ones() == 1 {
+        if bs.is_power_of_two() {
             dp[0][bs] = dist[0][bs.trailing_zeros() as usize + 1];
             continue;
         }
