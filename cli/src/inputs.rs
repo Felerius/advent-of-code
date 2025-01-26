@@ -8,7 +8,7 @@ use anyhow::{Context, Result};
 use collect::PuzzleId;
 use directories::ProjectDirs;
 use once_cell::sync::OnceCell;
-use reqwest::blocking::Client;
+use ureq::Agent;
 
 const USER_AGENT: &str =
     "Script by David Stangl (david@david-stangl.com, github.com/Felerius/advent-of-code)";
@@ -17,7 +17,7 @@ const APPLICATION: &str = "advent-of-code";
 
 struct Downloader {
     cache_dir: PathBuf,
-    http_client: Client,
+    http_agent: Agent,
 }
 
 impl Downloader {
@@ -26,13 +26,13 @@ impl Downloader {
             .context("could not determine home directory")?
             .cache_dir()
             .to_path_buf();
-        let http_client = Client::builder()
+        let http_agent = Agent::config_builder()
             .user_agent(USER_AGENT)
             .build()
-            .context("failed to create HTTP client")?;
+            .new_agent();
         Ok(Self {
             cache_dir,
-            http_client,
+            http_agent,
         })
     }
 
@@ -55,14 +55,13 @@ impl Downloader {
             puzzle_id.year, puzzle_id.day
         );
         let mut input = self
-            .http_client
-            .get(&url)
+            .http_agent
+            .get(url)
             .header("Cookie", format!("session={aoc_session_cookie}"))
-            .send()
-            .context("failed to send request to adventofcode.com")?
-            .error_for_status()
+            .call()
             .context("request to adventofcode.com failed (expired session cookie?)")?
-            .text()
+            .into_body()
+            .read_to_string()
             .context("failed to decode input data from adventofcode.com")?;
         input.truncate(input.trim_end().len());
 

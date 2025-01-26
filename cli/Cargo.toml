@@ -12,7 +12,7 @@ indicatif.workspace = true
 itertools.workspace = true
 jiff.workspace = true
 once_cell.workspace = true
-reqwest.workspace = true
+ureq.workspace = true
 
 aoc2015.workspace = true
 aoc2016.workspace = true
