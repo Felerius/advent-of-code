@@ -13,7 +13,7 @@ use jiff::SignedDuration;
 use crate::{
     commands::PuzzleArgs,
     inputs,
-    style::{highlighted, spinner},
+    style::{error, highlighted, print_runtime_bar, progress_style, spinner},
 };
 
 #[derive(clap::Args)]
@@ -24,6 +24,10 @@ pub(crate) struct Args {
     /// Minimum time to run each benchmark for.
     #[clap(short, long, default_value = "1s", value_parser = parse_bench_time)]
     time: Duration,
+
+    /// Render bars to show the relative runtimes of each solution.
+    #[clap(long)]
+    bar: bool,
 }
 
 fn parse_bench_time(s: &str) -> Result<Duration> {
@@ -37,19 +41,20 @@ fn parse_bench_time(s: &str) -> Result<Duration> {
 
 pub(crate) fn run(args: &Args) -> Result<()> {
     let puzzles = args.puzzles.selected_puzzles()?;
-    if puzzles.len() == 1 {
-        let spinner = spinner("benchmarking", 0);
-        let (puzzle_id, solution) = puzzles[0];
+    if let &[(puzzle_id, solution)] = puzzles.as_slice() {
+        if args.bar {
+            eprintln!("{}", error("--bar is only supported for multiple puzzles"));
+        }
+
+        let spinner = spinner(format!("Benchmarking {puzzle_id}"), 0);
         let bench_result = benchmark(puzzle_id, solution, args.time)?;
         spinner.finish_and_clear();
         println!("{}: {}", highlighted(puzzle_id), bench_result);
         return Ok(());
     }
 
-    let progress_bar = ProgressBar::new(puzzles.len() as u64);
-    // Immediately print with the bar with zero progress
-    progress_bar.tick();
-
+    let progress_bar = ProgressBar::new(puzzles.len() as u64).with_style(progress_style());
+    progress_bar.tick(); // Immediately print with the bar with zero progress
     let mut benchmarked: Vec<_> = puzzles
         .into_iter()
         .map(|(puzzle_id, solution)| {
@@ -59,14 +64,19 @@ pub(crate) fn run(args: &Args) -> Result<()> {
         .try_collect()?;
     benchmarked.sort_unstable_by_key(|(_, bench_result)| Reverse(bench_result.median));
 
-    let total_runtime: Duration = benchmarked
+    let (total_runtime, max_runtime) = benchmarked
         .iter()
-        .map(|(_, bench_result)| bench_result.median)
-        .sum();
-    println!("{}: {:.2?}", highlighted("Total runtime"), total_runtime);
+        .fold((Duration::ZERO, Duration::ZERO), |(total, max), (_, r)| {
+            (total + r.median, max.max(r.median))
+        });
+    println!("{} {:.2?}", highlighted("Total runtime:"), total_runtime);
     println!("{}:", highlighted("Solutions (slowest to fastest)"));
     for (puzzle_id, bench_result) in benchmarked {
-        println!("  {}: {:#}", highlighted(puzzle_id), bench_result);
+        if args.bar {
+            print_runtime_bar(puzzle_id, bench_result.median, max_runtime);
+        } else {
+            println!("  {}: {}", highlighted(puzzle_id), bench_result);
+        }
     }
 
     Ok(())
@@ -113,22 +123,7 @@ struct BenchResult {
 
 impl Display for BenchResult {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        let median = FormattedRuntime(self.median);
-        let min = FormattedRuntime(self.min);
-        let max = FormattedRuntime(self.max);
-        let runs = self.runs;
-
-        // Alternate switches to table format
-        let w = if f.alternate() { 8 } else { 0 };
-        write!(f, "{median:w$} ({min:w$} .. {max:w$}, {runs} runs)")
-    }
-}
-
-struct FormattedRuntime(Duration);
-
-impl Display for FormattedRuntime {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        let width = f.width().unwrap_or(0);
-        write!(f, "{:>width$.2?}", self.0)
+        let details = format!("({:.2?}..{:.2?}, {} runs)", self.min, self.max, self.runs);
+        write!(f, "{:.2?} {}", self.median, console::style(details).dim())
     }
 }
