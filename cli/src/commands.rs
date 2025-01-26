@@ -3,7 +3,7 @@ mod run;
 
 use std::str::FromStr;
 
-use anyhow::{bail, Context, Error, Result};
+use anyhow::{bail, format_err, Context, Error, Result};
 use clap::Parser;
 use collect::{PuzzleId, Solution};
 use jiff::{
@@ -11,7 +11,7 @@ use jiff::{
     Zoned,
 };
 
-use crate::ALL_YEARS;
+use crate::all_solutions;
 
 #[derive(Parser)]
 enum Args {
@@ -62,18 +62,23 @@ impl FromStr for PuzzleSelection {
 }
 
 #[derive(clap::Args)]
+#[group(required = true, multiple = false)]
 struct PuzzleArgs {
     /// Which puzzles to run.
     ///
     /// Supports the following values:
     ///
-    /// - no value: run the most recent puzzle
+    /// - no value: run the most recent puzzle (unless `--most-recently-edited` is used)
     /// - `all`: run all solved puzzles
     /// - `<day>`: run <day> in the most recent year
     /// - `<year>`: run all puzzles in <year>
     /// - `<year>-<day>`: run <day> in <year>
     #[clap(verbatim_doc_comment)]
     puzzles: Option<PuzzleSelection>,
+
+    /// Run the puzzle whose solution file was most recently edited.
+    #[clap(long)]
+    most_recently_edited: bool,
 }
 
 impl PuzzleArgs {
@@ -94,23 +99,43 @@ impl PuzzleArgs {
         Ok(PuzzleId { year, day })
     }
 
-    fn selected_puzzles(&self) -> Result<Vec<(PuzzleId, Solution)>> {
-        let (chosen_year, chosen_day) = match self.puzzles.unwrap_or(PuzzleSelection::MostRecent) {
+    fn most_recently_edited_puzzle() -> Result<PuzzleId> {
+        all_solutions()
+            .filter_map(|(id, _)| {
+                let source_file = format!("{}/src/day{:02}.rs", id.year, id.day);
+                let metadata = std::fs::metadata(source_file).ok()?;
+                let modified = metadata.modified().ok()?;
+                Some((id, modified))
+            })
+            .max_by_key(|&(_, modified)| modified)
+            .map(|(id, _)| id)
+            .ok_or_else(|| format_err!("No puzzles found. Wrong directory?"))
+    }
+
+    fn selected_filters(&self) -> (Option<u16>, Option<u8>) {
+        if self.most_recently_edited {
+            let most_recent = Self::most_recently_edited_puzzle().unwrap();
+            return (Some(most_recent.year), Some(most_recent.day));
+        }
+
+        match self.puzzles.unwrap_or(PuzzleSelection::MostRecent) {
             PuzzleSelection::All => (None, None),
             PuzzleSelection::MostRecent => {
-                let most_recent = Self::most_recent_puzzle()?;
+                let most_recent = Self::most_recent_puzzle().unwrap();
                 (Some(most_recent.year), Some(most_recent.day))
             }
             PuzzleSelection::DayInMostRecentYear(day) => {
-                (Some(Self::most_recent_puzzle()?.year), Some(day))
+                let most_recent = Self::most_recent_puzzle().unwrap();
+                (Some(most_recent.year), Some(day))
             }
             PuzzleSelection::Year(year) => (Some(year), None),
             PuzzleSelection::Single(puzzle_id) => (Some(puzzle_id.year), Some(puzzle_id.day)),
-        };
+        }
+    }
 
-        let selected: Vec<_> = ALL_YEARS
-            .iter()
-            .flat_map(|year| year.iter().copied())
+    fn selected_puzzles(&self) -> Result<Vec<(PuzzleId, Solution)>> {
+        let (chosen_year, chosen_day) = self.selected_filters();
+        let selected: Vec<_> = all_solutions()
             .filter(|(id, _)| {
                 chosen_year.is_none_or(|year| id.year == year)
                     && chosen_day.is_none_or(|day| id.day == day)
