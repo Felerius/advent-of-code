@@ -1,3 +1,5 @@
+use std::hash::Hash;
+
 use rustc_hash::{FxBuildHasher, FxHashMap, FxHashSet};
 
 pub type FastHashSet<T> = FxHashSet<T>;
@@ -27,5 +29,36 @@ impl<K, V> FastHashCollectionExt for FastHashMap<K, V> {
 
     fn with_capacity(capacity: usize) -> Self {
         Self::with_capacity_and_hasher(capacity, FxBuildHasher)
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct Indexer<T>(FastHashMap<T, usize>);
+
+impl<T: Eq + Hash> Indexer<T> {
+    #[must_use]
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    #[must_use]
+    pub fn len(&self) -> usize {
+        self.0.len()
+    }
+
+    pub fn index_of(&mut self, value: T) -> usize {
+        let len = self.0.len();
+        *self.0.entry(value).or_insert(len)
+    }
+
+    #[must_use]
+    pub fn as_map(&self) -> &FastHashMap<T, usize> {
+        &self.0
+    }
+}
+
+impl<T> Default for Indexer<T> {
+    fn default() -> Self {
+        Self(FastHashMap::default())
     }
 }
