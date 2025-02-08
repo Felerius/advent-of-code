@@ -46,6 +46,11 @@ impl<T: Eq + Hash> Indexer<T> {
         self.0.len()
     }
 
+    #[must_use]
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+
     pub fn index_of(&mut self, value: T) -> usize {
         let len = self.0.len();
         *self.0.entry(value).or_insert(len)
