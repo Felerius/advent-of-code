@@ -1,5 +1,6 @@
 mod bench;
 mod run;
+mod setup;
 
 use std::str::FromStr;
 
@@ -20,6 +21,9 @@ enum Args {
 
     /// Benchmark one or multiple puzzle solutions.
     Bench(bench::Args),
+
+    /// Setup a new, empty puzzle solution.
+    Setup(setup::Args),
 }
 
 pub(crate) fn run() -> Result<()> {
@@ -27,6 +31,7 @@ pub(crate) fn run() -> Result<()> {
     match opts {
         Args::Run(args) => run::run(&args),
         Args::Bench(args) => bench::run(&args),
+        Args::Setup(args) => setup::run(&args),
     }
 }
 
