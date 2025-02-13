@@ -1,4 +1,5 @@
-use utils::input;
+use anyhow::Result;
+use utils::input::Input;
 
 const WEAPONS: &[(u32, u32)] = &[(8, 4), (10, 5), (25, 6), (40, 7), (74, 8)];
 const ARMORS: &[(u32, u32)] = &[(0, 0), (13, 1), (31, 2), (53, 3), (75, 4), (102, 5)];
@@ -25,9 +26,9 @@ const RING_COMBOS: &[(u32, u32, u32)] = &[
     (180, 3, 3),
 ];
 
-pub(crate) fn run(input: &str) -> (u32, u32) {
-    let [boss_hp, boss_dmg, boss_ac] = input::integers::<u32, 3>(input);
-    itertools::iproduct!(WEAPONS, ARMORS, RING_COMBOS)
+pub(crate) fn run(input: &str) -> Result<(u32, u32)> {
+    let [boss_hp, boss_dmg, boss_ac] = input.unsigned_integers_n::<u32, 3>()?;
+    let (part1, part2) = itertools::iproduct!(WEAPONS, ARMORS, RING_COMBOS)
         .map(|((c1, dmg1), (c2, ac1), (c3, dmg2, ac2))| {
             let my_dmg = dmg1 + dmg2;
             let my_ac = ac1 + ac2;
@@ -43,5 +44,6 @@ pub(crate) fn run(input: &str) -> (u32, u32) {
                 part2 = part2.max(cost);
             }
             (part1, part2)
-        })
+        });
+    Ok((part1, part2))
 }

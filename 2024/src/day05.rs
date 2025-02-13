@@ -1,5 +1,5 @@
 use anyhow::{ensure, Result};
-use utils::input;
+use utils::input::Input;
 
 // Assume that node indices in the input are in the range [0, N).
 const N: usize = 100;
@@ -8,7 +8,7 @@ pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
     let mut lines = input.lines();
     let mut adj_rev = [0_u128; N];
     for line in lines.by_ref().take_while(|line| !line.is_empty()) {
-        let [from, to] = input::integers::<usize, 2>(line);
+        let [from, to] = line.unsigned_integers_n::<usize, 2>()?;
         ensure!(from < N && to < N, "node index out of bounds");
         adj_rev[to] |= 1 << from;
     }

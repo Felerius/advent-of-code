@@ -1,11 +1,11 @@
 use anyhow::Result;
 use arrayvec::ArrayString;
-use utils::{input, ocr};
+use utils::{input::Input, ocr};
 
 pub(crate) fn run(input: &str) -> Result<(usize, ArrayString<10>)> {
     let mut grid = [[false; 50]; 6];
     for line in input.lines() {
-        let [a, b] = input::integers(line);
+        let [a, b] = line.unsigned_integers_n()?;
         if line.starts_with("rect") {
             for row in &mut grid[..b] {
                 row[..a].fill(true);

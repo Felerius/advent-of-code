@@ -1,6 +1,6 @@
 use itertools::Itertools;
 use joinery::Joinable;
-use utils::input;
+use utils::input::Input;
 
 pub(crate) fn run(input: &str) -> (String, u64) {
     run_testable(input, false)
@@ -8,7 +8,7 @@ pub(crate) fn run(input: &str) -> (String, u64) {
 
 fn run_testable(input: &str, skip_part2: bool) -> (String, u64) {
     let (l1, l2, l3, _, l5) = input.lines().collect_tuple().unwrap();
-    let registers = [l1, l2, l3].map(|line| input::integers::<u64, 1>(line)[0]);
+    let registers = [l1, l2, l3].map(|line| line.unsigned_integers_n::<u64, 1>().unwrap()[0]);
     let program: Vec<_> = l5[9..]
         .split(',')
         .map(|s| s.parse::<u8>().unwrap())

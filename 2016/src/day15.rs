@@ -1,13 +1,13 @@
 use anyhow::{Context, Result};
 use num::{integer::ExtendedGcd, Integer};
-use utils::input;
+use utils::input::Input;
 
 pub(crate) fn run(input: &str) -> Result<(i64, i64)> {
     let mut eq = (0, 1);
     let mut idx = 0;
     for line in input.lines() {
         idx += 1;
-        let [_, m, _, x0] = input::integers(line);
+        let [_, m, _, x0] = line.signed_integers_n()?;
         eq = combine_equations(eq, to_eq(x0, m, idx)).context("unsolvable")?;
     }
     let part1 = eq.0;

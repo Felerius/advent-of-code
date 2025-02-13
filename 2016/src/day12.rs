@@ -1,15 +1,27 @@
 use anyhow::{Context, Result};
 use itertools::Itertools;
-use utils::input;
+use utils::input::Input;
 
 use crate::assembunny::{Register, VirtualMachine};
 
 pub(crate) fn run(input: &str) -> Result<(u32, u32)> {
     let mut lines = input.lines();
-    let [index1] = input::integers(lines.nth(2).context("unexpected eof")?);
-    let [off] = input::integers(lines.nth(2).context("unexpected eof")?);
-    let [factor1]: [u32; 1] = input::integers(lines.nth(10).context("unexpected eof")?);
-    let [factor2]: [u32; 1] = input::integers(lines.next().context("unexpected eof")?);
+    let [index1] = lines
+        .nth(2)
+        .context("unexpected eof")?
+        .signed_integers_n()?;
+    let [off] = lines
+        .nth(2)
+        .context("unexpected eof")?
+        .signed_integers_n()?;
+    let [factor1]: [u32; 1] = lines
+        .nth(10)
+        .context("unexpected eof")?
+        .unsigned_integers_n()?;
+    let [factor2]: [u32; 1] = lines
+        .next()
+        .context("unexpected eof")?
+        .unsigned_integers_n()?;
 
     let mut a: u32 = 1;
     let mut b = 2;

@@ -1,11 +1,11 @@
 use itertools::{EitherOrBoth, Itertools};
-use utils::input;
+use utils::input::Input;
 
 pub(crate) fn run(input: &str) -> (u64, u64) {
     let (mut list1, mut list2): (Vec<_>, Vec<_>) = input
         .lines()
         .map(|line| {
-            let [a, b] = input::integers::<u32, 2>(line);
+            let [a, b] = line.unsigned_integers_n::<u32, 2>().unwrap();
             (a, b)
         })
         .unzip();

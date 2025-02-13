@@ -1,10 +1,11 @@
-use utils::input;
+use anyhow::Result;
+use utils::input::Input;
 
 const MOD: u64 = 33_554_393;
 
-pub(crate) fn run(input: &str) -> (u64, u8) {
-    let [row, col] = input::integers::<u32, 2>(input);
-    (solve(row - 1, col - 1), 0)
+pub(crate) fn run(input: &str) -> Result<(u64, u8)> {
+    let [row, col] = input.unsigned_integers_n::<u32, 2>()?;
+    Ok((solve(row - 1, col - 1), 0))
 }
 
 fn solve(row: u32, col: u32) -> u64 {

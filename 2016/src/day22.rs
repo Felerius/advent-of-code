@@ -1,15 +1,16 @@
-use utils::input;
+use anyhow::Result;
+use utils::input::Input;
 
 const MAX: usize = 600;
 
-pub(crate) fn run(input: &str) -> (usize, usize) {
+pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
     let mut num_free = [0; MAX];
     let mut num_used = [0; MAX];
     let mut width = 0;
     let mut num_large = 0;
     let mut pos_empty = (0, 0);
     for line in input.lines().skip(2) {
-        let [x, y, size, used, _, _] = input::integers::<usize, 6>(line);
+        let [x, y, size, used, _, _] = line.unsigned_integers_n::<usize, 6>()?;
         width = width.max(x + 1);
         num_large += usize::from(size >= 100);
         if used == 0 {
@@ -45,5 +46,5 @@ pub(crate) fn run(input: &str) -> (usize, usize) {
         // Move empty node around target data to enable its moves
         4 * (width - 2);
 
-    (part1, part2)
+    Ok((part1, part2))
 }

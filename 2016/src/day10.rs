@@ -1,15 +1,15 @@
 use anyhow::{bail, Context, Result};
-use utils::input;
+use utils::input::Input;
 
 pub(crate) fn run(input: &str) -> Result<(u8, u32)> {
     let mut state = State::default();
     for line in input.lines() {
         if line.starts_with("value") {
-            let [val, bot] = input::integers(line);
+            let [val, bot] = line.unsigned_integers_n()?;
             state.ensure(bot);
             state.give(Target::Bot(bot), val)?;
         } else {
-            let [bot, low, high] = input::integers(line);
+            let [bot, low, high] = line.unsigned_integers_n()?;
             let (_, tail) = line.split_once(" gives ").context("invalid instruction")?;
             let low_to_bot = tail[7..].starts_with("bot");
             let (_, tail) = tail.split_once(" and ").context("invalid instruction")?;

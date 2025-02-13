@@ -2,7 +2,7 @@ use std::ops::Range;
 
 use anyhow::{bail, Result};
 use itertools::Itertools;
-use utils::input;
+use utils::input::Input;
 
 const SIZE: usize = 1005;
 
@@ -84,7 +84,7 @@ fn parse_instruction(line: &str) -> Result<(InstructionType, Range<u16>, Range<u
         "toggle " => InstructionType::Toggle,
         _ => bail!("unknown instruction type: {line}"),
     };
-    let [x1, y1, x2, y2] = input::integers(line);
+    let [x1, y1, x2, y2] = line.unsigned_integers_n()?;
 
     #[allow(clippy::range_plus_one)]
     Ok((typ, x1..x2 + 1, y1..y2 + 1))

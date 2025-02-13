@@ -1,15 +1,16 @@
-use utils::input;
+use anyhow::Result;
+use utils::input::Input;
 
-pub(crate) fn run(input: &str) -> (u64, u64) {
-    input.lines().fold((0, 0), |(part1, part2), line| {
-        let mut nums: [u64; 3] = input::integers(line);
+pub(crate) fn run(input: &str) -> Result<(u64, u64)> {
+    input.lines().try_fold((0, 0), |(part1, part2), line| {
+        let mut nums: [u64; 3] = line.unsigned_integers_n()?;
         nums.sort_unstable();
         let [a, b, c] = nums;
 
-        (
+        Ok((
             part1 + 3 * a * b + 2 * (a * c + b * c),
             part2 + 2 * (a + b) + a * b * c,
-        )
+        ))
     })
 }
 
@@ -21,7 +22,7 @@ mod tests {
     fn part1() {
         let inputs = [("2x3x4", 58), ("1x1x10", 43)];
         for (input, expected) in inputs {
-            assert_eq!(run(input).0, expected, "failed for {input:?}");
+            assert_eq!(run(input).unwrap().0, expected, "failed for {input:?}");
         }
     }
 
@@ -29,7 +30,7 @@ mod tests {
     fn part2() {
         let inputs = [("2x3x4", 34), ("1x1x10", 14)];
         for (input, expected) in inputs {
-            assert_eq!(run(input).1, expected, "failed for {input:?}");
+            assert_eq!(run(input).unwrap().1, expected, "failed for {input:?}");
         }
     }
 }

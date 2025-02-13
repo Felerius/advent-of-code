@@ -1,11 +1,12 @@
 use std::{cmp::Reverse, collections::BinaryHeap};
 
+use anyhow::Result;
 use arrayvec::ArrayVec;
-use utils::{hash::FastHashMap, input};
+use utils::{hash::FastHashMap, input::Input};
 
-pub(crate) fn run(input: &str) -> (u16, u16) {
-    let [boss_hp, boss_dmg] = input::integers(input);
-    (solve(boss_hp, boss_dmg, 0), solve(boss_hp, boss_dmg, 1))
+pub(crate) fn run(input: &str) -> Result<(u16, u16)> {
+    let [boss_hp, boss_dmg] = input.unsigned_integers_n()?;
+    Ok((solve(boss_hp, boss_dmg, 0), solve(boss_hp, boss_dmg, 1)))
 }
 
 #[allow(clippy::similar_names)]

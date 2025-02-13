@@ -1,12 +1,17 @@
 use std::collections::VecDeque;
 
-use utils::input;
+use anyhow::Result;
+use itertools::Itertools;
+use utils::input::Input;
 
 const WIDTH: usize = 71;
 const HEIGHT: usize = 71;
 
-pub(crate) fn run(input: &str) -> (usize, String) {
-    let bytes: Vec<_> = input.lines().map(input::integers::<usize, 2>).collect();
+pub(crate) fn run(input: &str) -> Result<(usize, String)> {
+    let bytes: Vec<_> = input
+        .lines()
+        .map(Input::unsigned_integers_n::<usize, 2>)
+        .try_collect()?;
     let mut grid = [[false; WIDTH]; HEIGHT];
     for &[x, y] in &bytes[..1024] {
         grid[y][x] = true;
@@ -58,7 +63,7 @@ pub(crate) fn run(input: &str) -> (usize, String) {
         .unwrap();
     let part2 = format!("{x},{y}");
 
-    (part1, part2)
+    Ok((part1, part2))
 }
 
 fn neighbors(x: usize, y: usize) -> impl Iterator<Item = (usize, usize)> {
