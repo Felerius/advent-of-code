@@ -1,7 +1,9 @@
-use utils::input;
+use anyhow::Result;
+use itertools::Itertools;
+use utils::input::Input;
 
-pub(crate) fn run(input: &str) -> (i64, i64) {
-    let ingredients: Vec<[i32; 5]> = input.lines().map(input::signed_integers).collect();
+pub(crate) fn run(input: &str) -> Result<(i64, i64)> {
+    let ingredients: Vec<[i32; 5]> = input.lines().map(Input::signed_integers_n).try_collect()?;
     let [ing1, ing2, ing3, ing4] = ingredients.try_into().expect("4 ingredients required");
 
     let mut part1 = 0;
@@ -26,5 +28,5 @@ pub(crate) fn run(input: &str) -> (i64, i64) {
         }
     }
 
-    (part1, part2)
+    Ok((part1, part2))
 }

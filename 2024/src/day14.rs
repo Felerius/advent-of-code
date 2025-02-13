@@ -1,26 +1,28 @@
+use anyhow::Result;
+use itertools::Itertools;
 use num::Integer;
-use utils::input;
+use utils::input::Input;
 
-pub(crate) fn run(input: &str) -> (usize, u16) {
+pub(crate) fn run(input: &str) -> Result<(usize, u16)> {
     run_parameterized(input, 101, 103)
 }
 
-fn run_parameterized(input: &str, width: u16, height: u16) -> (usize, u16) {
+fn run_parameterized(input: &str, width: u16, height: u16) -> Result<(usize, u16)> {
     assert!(width % 2 == 1 && height % 2 == 1);
     let robots: Vec<_> = input
         .lines()
         .map(|line| {
-            let [x, y, dx, dy] = input::signed_integers::<i16, 4>(line);
+            let [x, y, dx, dy] = line.signed_integers_n::<i16, 4>()?;
             let dx = dx.rem_euclid(width as i16) as u16;
             let dy = dy.rem_euclid(height as i16) as u16;
-            Robot {
+            anyhow::Ok(Robot {
                 x: x as u16,
                 y: y as u16,
                 dx,
                 dy,
-            }
+            })
         })
-        .collect();
+        .try_collect()?;
 
     let [q1, q2, q3, q4] = robots.iter().fold([0; 4], |mut quadrants, robot| {
         let x = robot.x(100, width);
@@ -44,7 +46,7 @@ fn run_parameterized(input: &str, width: u16, height: u16) -> (usize, u16) {
     let part2 = (tree_y - tree_x) % height * gcd.x % height * width + tree_x;
     let part2 = part2.rem_euclid(width * height) as u16;
 
-    (part1, part2)
+    Ok((part1, part2))
 }
 
 fn find_min_variance<'a>(
@@ -109,6 +111,6 @@ p=9,5 v=-3,-3";
 
     #[test]
     fn part1() {
-        assert_eq!(run_parameterized(INPUT, 11, 7).0, 12);
+        assert_eq!(run_parameterized(INPUT, 11, 7).unwrap().0, 12);
     }
 }
