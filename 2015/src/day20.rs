@@ -46,7 +46,9 @@ fn part2(target: usize, dp: &mut [usize]) -> usize {
             *entry = i + block_start;
         }
 
-        for i in BLOCK..(block_start + BLOCK) / 2 {
+        #[allow(clippy::manual_midpoint, reason = "does not calculate a midpoint")]
+        let div_upper_bound = (block_start + BLOCK) / 2;
+        for i in BLOCK..div_upper_bound {
             let j = block_start.next_multiple_of(i);
             if let Some(entry) = dp.get_mut(j - block_start) {
                 *entry += i;
@@ -77,7 +79,7 @@ fn lower_bound(target: usize) -> usize {
     }
     let mut low = high / 2;
     while high - low > 1 {
-        let mid = (low + high) / 2;
+        let mid = low.midpoint(high);
         if robins_upper_bound(mid) <= target {
             low = mid;
         } else {

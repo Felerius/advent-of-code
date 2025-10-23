@@ -47,7 +47,7 @@ impl<T: Integer + Unsigned + From<u8>> Iterator for IntegersUnsigned<'_, T> {
 
     fn size_hint(&self) -> (usize, Option<usize>) {
         let len = self.0.len();
-        (0, Some((len + 1) / 2))
+        (0, Some(len.div_ceil(2)))
     }
 }
 
@@ -67,7 +67,7 @@ impl<T: Integer + Signed + From<u8>> Iterator for IntegersSigned<'_, T> {
 
     fn size_hint(&self) -> (usize, Option<usize>) {
         let len = self.0.len();
-        (0, Some((len + 1) / 2))
+        (0, Some(len.div_ceil(2)))
     }
 }
 

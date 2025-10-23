@@ -28,8 +28,8 @@ fn run_parameterized(input: &str, width: u16, height: u16) -> Result<(usize, u16
         let x = robot.x(100, width);
         let y = robot.y(100, height);
         if x != width / 2 && y != height / 2 {
-            let h2 = (height + 1) / 2;
-            let w2 = (width + 1) / 2;
+            let h2 = height.div_ceil(2);
+            let w2 = width.div_ceil(2);
             let quadrant = 2 * (y / h2) + x / w2;
             quadrants[usize::from(quadrant)] += 1;
         }

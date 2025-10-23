@@ -37,7 +37,7 @@ fn calc_part1(input: &[u8]) -> usize {
 }
 
 fn calc_part2(input: &[u8]) -> usize {
-    let num_files = (input.len() + 1) / 2;
+    let num_files = input.len().div_ceil(2);
     let mut files = vec![(0, 0); num_files];
     let mut space_by_len: [_; 10] = array::from_fn(|_| BinaryHeap::new());
     let mut offset = 0;
