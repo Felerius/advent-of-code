@@ -30,7 +30,7 @@ fn enumerate(rem: u64, nums: &[(u64, usize)]) -> (bool, bool) {
 
     let mut part1 = false;
     let mut part2 = false;
-    if rem % num == 0 {
+    if rem.is_multiple_of(num) {
         (part1, part2) = enumerate(rem / num, nums);
     }
     if !part2 && rem % TEN_POW[num_digits] == num {

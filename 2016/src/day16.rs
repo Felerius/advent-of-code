@@ -20,7 +20,7 @@ fn generate(len: usize, init: &[u8]) -> Vec<u8> {
 }
 
 fn checksum(mut data: Vec<u8>) -> Vec<u8> {
-    while data.len() % 2 == 0 {
+    while data.len().is_multiple_of(2) {
         for i in 0..data.len() / 2 {
             data[i] = u8::from(data[2 * i] == data[2 * i + 1]);
         }

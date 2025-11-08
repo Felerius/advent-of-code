@@ -58,7 +58,7 @@ impl Stack {
 
     pub fn push(&mut self, byte: u8) {
         self.bytes.push(byte);
-        if self.bytes.len() % 64 == 0 {
+        if self.bytes.len().is_multiple_of(64) {
             let digest = self.prefix_digests.last().copied().unwrap_or(INIT);
             let digest = hash_block(self.bytes.last_chunk().unwrap(), digest);
             self.prefix_digests.push(digest);
@@ -72,7 +72,7 @@ impl Stack {
     }
 
     pub fn pop(&mut self) {
-        if self.bytes.len() % 64 == 0 {
+        if self.bytes.len().is_multiple_of(64) {
             self.prefix_digests.pop();
         }
         self.bytes.pop();

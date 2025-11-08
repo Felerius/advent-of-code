@@ -74,6 +74,7 @@ pub(crate) fn run(args: &Args) -> Result<()> {
     adjust_lib_rs(&lib_rs_path, id)?;
     fs::write(day_rs_path, DEFAULT_DAY_RS_CONTENT).context("failed to write solution file")?;
 
+    println!("Set up puzzle {id}");
     Ok(())
 }
 

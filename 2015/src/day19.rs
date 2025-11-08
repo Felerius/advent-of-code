@@ -59,6 +59,7 @@ pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
             for (from, rules) in cnf.rules.iter().enumerate() {
                 let mut mn = usize::MAX / 3;
                 for &(to1, to2, cost) in rules {
+                    #[allow(clippy::needless_range_loop, reason = "false positive")]
                     for mid in l + 1..r {
                         mn = mn.min(usize::from(cost) + dp[l][mid][to1] + dp[mid][r][to2]);
                     }
