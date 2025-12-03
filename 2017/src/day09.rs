@@ -1,6 +1,8 @@
-use anyhow::{ensure, Result};
+use anyhow::{Result, ensure};
+use register::register;
 
-pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
+#[register]
+fn run(input: &str) -> Result<(usize, usize)> {
     let mut depth = 1;
     let mut in_garbage = false;
     let mut part1 = 0;

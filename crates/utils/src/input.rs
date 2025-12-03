@@ -1,6 +1,6 @@
 use std::{iter::FusedIterator, marker::PhantomData};
 
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use arrayvec::ArrayVec;
 use num::{Integer, Signed, Unsigned};
 

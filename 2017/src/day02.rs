@@ -1,7 +1,9 @@
 use anyhow::Result;
 use itertools::Itertools;
+use register::register;
 
-pub(crate) fn run(input: &str) -> Result<(u32, u32)> {
+#[register]
+fn run(input: &str) -> Result<(u32, u32)> {
     input
         .lines()
         .map(|line| {

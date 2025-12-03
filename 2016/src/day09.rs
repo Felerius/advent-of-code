@@ -1,6 +1,8 @@
 use anyhow::{Context, Result};
+use register::register;
 
-pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
+#[register]
+fn run(input: &str) -> Result<(usize, usize)> {
     let part1 = decompressed_length(input, false)?;
     let part2 = decompressed_length(input, true)?;
     Ok((part1, part2))

@@ -1,1 +1,3 @@
-collect::collect!(2025; 01, 02, 03);
+mod day01;
+mod day02;
+mod day03;

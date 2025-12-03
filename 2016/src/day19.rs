@@ -1,8 +1,10 @@
 use std::collections::VecDeque;
 
 use anyhow::Result;
+use register::register;
 
-pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
+#[register]
+fn run(input: &str) -> Result<(usize, usize)> {
     let n: usize = input.parse()?;
 
     // Josephus problem: https://en.wikipedia.org/wiki/Josephus_problem#Solution

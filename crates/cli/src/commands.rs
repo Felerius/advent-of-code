@@ -4,15 +4,15 @@ mod setup;
 
 use std::str::FromStr;
 
-use anyhow::{bail, format_err, Context, Error, Result};
+use anyhow::{Context, Error, Result, bail, format_err};
 use clap::Parser;
-use collect::{PuzzleId, Solution};
 use jiff::{
-    tz::{Offset, TimeZone},
     Zoned,
+    tz::{Offset, TimeZone},
 };
+use register::SolutionFunction;
 
-use crate::all_solutions;
+use crate::{PuzzleId, all_solutions};
 
 #[derive(Parser)]
 enum Args {
@@ -115,7 +115,7 @@ impl PuzzleArgs {
         Ok((chosen_year, chosen_day))
     }
 
-    fn selected_puzzles(&self) -> Result<Vec<(PuzzleId, Solution)>> {
+    fn selected_puzzles(&self) -> Result<Vec<(PuzzleId, SolutionFunction)>> {
         let (chosen_year, chosen_day) = self.derive_filters()?;
         let selected: Vec<_> = all_solutions()
             .filter(|(id, _)| {

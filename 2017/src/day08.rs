@@ -2,9 +2,11 @@ use std::cmp::Ordering;
 
 use anyhow::{Context, Result};
 use itertools::Itertools;
+use register::register;
 use utils::hash::{FastHashCollectionExt, FastHashMap};
 
-pub(crate) fn run(input: &str) -> Result<(i32, i32)> {
+#[register]
+fn run(input: &str) -> Result<(i32, i32)> {
     let mut registers = FastHashMap::new();
     let mut part2 = 0;
     for line in input.lines() {

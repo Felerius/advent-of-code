@@ -1,11 +1,13 @@
 [package]
-name = "collect"
+name = "register"
 version.workspace = true
 edition.workspace = true
 
 [dependencies]
 anyhow = { workspace = true }
-concat-idents = { workspace = true }
+linkme = { workspace = true }
+
+register-macro = { workspace = true }
 
 [lints]
 workspace = true

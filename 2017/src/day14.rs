@@ -1,10 +1,12 @@
 use std::{array, collections::VecDeque};
 
 use rayon::iter::{IndexedParallelIterator, IntoParallelRefMutIterator, ParallelIterator};
+use register::register;
 
 use crate::knot_hash;
 
-pub(crate) fn run(input: &str) -> (usize, usize) {
+#[register]
+fn run(input: &str) -> (usize, usize) {
     let input = input.trim();
     let mut grid = compute_grid_rayon(input);
     let part1 = grid.iter().flatten().filter(|&&b| b).count();

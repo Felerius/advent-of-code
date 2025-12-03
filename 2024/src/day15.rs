@@ -2,6 +2,7 @@ use std::fmt::{self, Display, Formatter};
 
 use arrayvec::ArrayVec;
 use itertools::Itertools;
+use register::register;
 use tinybitset::TinyBitSet;
 use utils::hash::{FastHashCollectionExt, FastHashSet};
 
@@ -9,7 +10,8 @@ type RowBitSet1 = TinyBitSet<u64, 1>;
 type RowBitSet2 = TinyBitSet<u128, 1>;
 type RowArrayVec<T> = ArrayVec<T, 100>;
 
-pub(crate) fn run(input: &str) -> (usize, usize) {
+#[register]
+fn run(input: &str) -> (usize, usize) {
     let mut lines = input.lines().map(str::as_bytes);
     let mut robot = (0, 0);
     let mut width = 0;

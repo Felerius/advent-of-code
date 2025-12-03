@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use anyhow::{bail, Context, Error, Result};
+use anyhow::{Context, Error, Result, bail};
 
 pub(crate) type Integer = u32;
 pub(crate) type JumpOffset = i16;

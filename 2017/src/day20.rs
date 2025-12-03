@@ -1,12 +1,14 @@
 use anyhow::Result;
 use itertools::Itertools;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
+use register::register;
 use utils::{
     hash::{FastHashCollectionExt, FastHashMap},
     input::Input,
 };
 
-pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
+#[register]
+fn run(input: &str) -> Result<(usize, usize)> {
     let particles: Vec<_> = input
         .lines()
         .map(|line| {

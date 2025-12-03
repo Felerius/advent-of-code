@@ -1,9 +1,11 @@
 use std::{collections::VecDeque, mem, str};
 
 use itertools::Itertools;
+use register::register;
 use utils::hash::{FastHashCollectionExt, FastHashMap};
 
-pub(crate) fn run(input: &str) -> (u64, String) {
+#[register]
+fn run(input: &str) -> (u64, String) {
     let (adj, wire_vals) = parse_graph(input);
     (part1(&adj, wire_vals), part2(&adj))
 }

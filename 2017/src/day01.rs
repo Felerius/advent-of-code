@@ -1,4 +1,7 @@
-pub(crate) fn run(input: &str) -> (u32, u32) {
+use register::register;
+
+#[register]
+fn run(input: &str) -> (u32, u32) {
     let input = input.as_bytes();
     let n = input.len();
 

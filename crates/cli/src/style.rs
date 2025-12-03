@@ -1,15 +1,16 @@
 use std::{fmt::Display, time::Duration};
 
-use collect::PuzzleId;
 use console::{Color, StyledObject};
 use indicatif::{ProgressBar, ProgressStyle};
+
+use crate::PuzzleId;
 
 pub(crate) fn highlighted<D: Display>(text: D) -> StyledObject<D> {
     console::style(text).blue().bold()
 }
 
 pub(crate) fn error<D: Display>(text: D) -> StyledObject<D> {
-    console::style(text).red()
+    console::style(text).red().bold()
 }
 
 pub(crate) fn aoc_star() -> StyledObject<&'static str> {

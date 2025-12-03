@@ -1,11 +1,13 @@
 use std::iter;
 
 use anyhow::Result;
+use register::register;
 
 const N1: usize = 2017;
 const N2: usize = 50_000_000;
 
-pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
+#[register]
+fn run(input: &str) -> Result<(usize, usize)> {
     let jump = input.trim().parse::<usize>()? + 1;
 
     // Part 1: we can reverse engineer the process without ever materializing

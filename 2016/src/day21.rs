@@ -1,12 +1,14 @@
 use std::str::FromStr;
 
-use anyhow::{bail, Error, Result};
+use anyhow::{Error, Result, bail};
 use arrayvec::ArrayVec;
 use itertools::Itertools;
+use register::register;
 
 const N: usize = 8;
 
-pub(crate) fn run(input: &str) -> Result<(String, String)> {
+#[register]
+fn run(input: &str) -> Result<(String, String)> {
     let instructions: Vec<_> = input.lines().map(Instruction::from_str).try_collect()?;
 
     let part1 = instructions

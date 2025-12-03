@@ -1,7 +1,9 @@
 use itertools::{EitherOrBoth, Itertools};
+use register::register;
 use utils::input::Input;
 
-pub(crate) fn run(input: &str) -> (u64, u64) {
+#[register]
+fn run(input: &str) -> (u64, u64) {
     let (mut list1, mut list2): (Vec<_>, Vec<_>) = input
         .lines()
         .map(|line| {

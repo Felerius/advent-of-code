@@ -1,7 +1,9 @@
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result, bail};
+use register::register;
 use utils::input::Input;
 
-pub(crate) fn run(input: &str) -> Result<(u8, u32)> {
+#[register]
+fn run(input: &str) -> Result<(u8, u32)> {
     let mut state = State::default();
     for line in input.lines() {
         if line.starts_with("value") {

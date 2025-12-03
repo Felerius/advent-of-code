@@ -1,5 +1,6 @@
 use std::fmt::{self, Display, Formatter};
 
+use register::register;
 use utils::hash::{FastHashCollectionExt, FastHashSet};
 
 const NAMES: [(&str, &str); 5] = [
@@ -10,7 +11,8 @@ const NAMES: [(&str, &str); 5] = [
     ("plutonium generator", "plutonium-compatible microchip"),
 ];
 
-pub(crate) fn run(input: &str) -> (usize, usize) {
+#[register]
+fn run(input: &str) -> (usize, usize) {
     let mut initial_state1 = State {
         floors: [(0, 0); 4],
         elevator: 0,

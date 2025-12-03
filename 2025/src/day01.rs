@@ -1,8 +1,10 @@
 use anyhow::{Result, bail};
+use register::register;
 
 const MOD: usize = 100;
 
-pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
+#[register]
+fn run(input: &str) -> Result<(usize, usize)> {
     let mut pos = 50_usize;
     let mut part1 = 0;
     let mut part2 = 0;

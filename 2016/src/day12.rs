@@ -1,10 +1,12 @@
 use anyhow::{Context, Result};
 use itertools::Itertools;
+use register::register;
 use utils::input::Input;
 
 use crate::assembunny::{Register, VirtualMachine};
 
-pub(crate) fn run(input: &str) -> Result<(u32, u32)> {
+#[register]
+fn run(input: &str) -> Result<(u32, u32)> {
     let mut lines = input.lines();
     let [index1] = lines
         .nth(2)

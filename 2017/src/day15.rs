@@ -8,6 +8,7 @@ use std::{
 };
 
 use anyhow::Result;
+use register::register;
 use utils::input::Input;
 
 const MOD: u64 = 2_147_483_647;
@@ -18,7 +19,8 @@ const N2: usize = 5_000_000;
 const CHUNK_SIZE: usize = 50_000;
 const NUM_CHUNKS: usize = N1.checked_div(CHUNK_SIZE).unwrap();
 
-pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
+#[register]
+fn run(input: &str) -> Result<(usize, usize)> {
     let [x, y] = input.unsigned_integers_n()?;
     Ok(parallel(x, y))
 }

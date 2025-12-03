@@ -1,9 +1,11 @@
 use anyhow::Result;
 use num::integer::Roots;
+use register::register;
 
 const BLOCK: usize = 1 << 16;
 
-pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
+#[register]
+fn run(input: &str) -> Result<(usize, usize)> {
     let target: usize = input.parse()?;
     let mut data = vec![0; BLOCK].into_boxed_slice();
     let part1 = part1(target.div_ceil(10), &mut data);

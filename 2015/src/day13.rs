@@ -1,11 +1,13 @@
 use anyhow::{Context, Result};
 use arrayvec::ArrayVec;
 use itertools::Itertools;
+use register::register;
 use utils::num::bits;
 
 const MAX: usize = 8;
 
-pub(crate) fn run(input: &str) -> Result<(i64, i64)> {
+#[register]
+fn run(input: &str) -> Result<(i64, i64)> {
     let (n, matrix) = parse(input)?;
     assert!(n > 2);
     let mut dp = [[[i64::MIN; MAX]; MAX]; 1 << MAX];

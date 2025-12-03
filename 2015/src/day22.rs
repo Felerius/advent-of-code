@@ -2,9 +2,11 @@ use std::{cmp::Reverse, collections::BinaryHeap};
 
 use anyhow::Result;
 use arrayvec::ArrayVec;
+use register::register;
 use utils::{hash::FastHashMap, input::Input};
 
-pub(crate) fn run(input: &str) -> Result<(u16, u16)> {
+#[register]
+fn run(input: &str) -> Result<(u16, u16)> {
     let [boss_hp, boss_dmg] = input.unsigned_integers_n()?;
     Ok((solve(boss_hp, boss_dmg, 0), solve(boss_hp, boss_dmg, 1)))
 }

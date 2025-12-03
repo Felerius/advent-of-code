@@ -1,4 +1,7 @@
-pub(crate) fn run(input: &str) -> (u64, u64) {
+use register::register;
+
+#[register]
+fn run(input: &str) -> (u64, u64) {
     run_testable(input, u64::from(u32::MAX))
 }
 

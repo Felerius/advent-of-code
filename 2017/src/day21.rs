@@ -1,8 +1,10 @@
 use std::array;
 
 use num::PrimInt;
+use register::register;
 
-pub(crate) fn run(input: &str) -> (usize, usize) {
+#[register]
+fn run(input: &str) -> (usize, usize) {
     // The iteration process is cyclic:
     //
     //      3x3 -> 4x4        2x2 -> 3x3        2x2 -> 3x3

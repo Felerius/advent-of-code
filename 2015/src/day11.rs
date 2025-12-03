@@ -1,8 +1,10 @@
 use arrayvec::ArrayString;
+use register::register;
 
 const LEN: usize = 8;
 
-pub(crate) fn run(input: &str) -> (ArrayString<LEN>, ArrayString<LEN>) {
+#[register]
+fn run(input: &str) -> (ArrayString<LEN>, ArrayString<LEN>) {
     let input = to_int(input);
     let part1 = next(input);
     let part2 = next(part1 + 1);

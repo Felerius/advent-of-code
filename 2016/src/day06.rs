@@ -1,9 +1,11 @@
-use anyhow::{ensure, Context, Result};
+use anyhow::{Context, Result, ensure};
 use arrayvec::{ArrayString, ArrayVec};
+use register::register;
 
 const LEN: usize = 8;
 
-pub(crate) fn run(input: &str) -> Result<(ArrayString<LEN>, ArrayString<LEN>)> {
+#[register]
+fn run(input: &str) -> Result<(ArrayString<LEN>, ArrayString<LEN>)> {
     let mut lines = input.lines().peekable();
     let line_len = lines.peek().context("empty input")?.len();
     ensure!(line_len <= LEN, "line length too long");

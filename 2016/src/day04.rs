@@ -1,4 +1,5 @@
 use anyhow::{Context, Result};
+use register::register;
 
 const ROOM_ROTATIONS: [&[u8]; 26] = [
     b"northpole-object-storage",
@@ -29,7 +30,8 @@ const ROOM_ROTATIONS: [&[u8]; 26] = [
     b"opsuiqpmf-pckfdu-tupsbhf",
 ];
 
-pub(crate) fn run(input: &str) -> Result<(u32, u16)> {
+#[register]
+fn run(input: &str) -> Result<(u32, u16)> {
     let mut part1 = 0;
     let mut part2 = None;
     for line in input.lines() {

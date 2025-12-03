@@ -1,5 +1,4 @@
 use anyhow::{Context, Result};
-use collect::Output;
 
 use crate::{
     commands::PuzzleArgs,
@@ -15,7 +14,7 @@ pub(crate) fn run(args: &Args) -> Result<()> {
         let spinner = spinner("running", 2);
 
         let input = inputs::get(puzzle_id)?;
-        let Output { part1, part2 } =
+        let (part1, part2) =
             solution(&input).with_context(|| format!("solution for {puzzle_id} failed"))?;
         spinner.finish_and_clear();
 

@@ -1,9 +1,11 @@
 use std::ops::ControlFlow;
 
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result, bail};
+use register::register;
 use utils::hash::Indexer;
 
-pub(crate) fn run(input: &str) -> Result<(String, u32)> {
+#[register]
+fn run(input: &str) -> Result<(String, u32)> {
     let mut indices = Indexer::new();
     let mut adj = vec![];
     let mut weights = vec![];

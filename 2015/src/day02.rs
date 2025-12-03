@@ -1,7 +1,9 @@
 use anyhow::Result;
+use register::register;
 use utils::input::Input;
 
-pub(crate) fn run(input: &str) -> Result<(u64, u64)> {
+#[register]
+fn run(input: &str) -> Result<(u64, u64)> {
     input.lines().try_fold((0, 0), |(part1, part2), line| {
         let mut nums: [u64; 3] = line.unsigned_integers_n()?;
         nums.sort_unstable();

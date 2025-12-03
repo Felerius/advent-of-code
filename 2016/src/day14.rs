@@ -1,10 +1,12 @@
 use std::{collections::VecDeque, sync::mpsc, thread};
 
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use panic_message::panic_message;
+use register::register;
 use utils::md5::{Digest, SingleBlock};
 
-pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
+#[register]
+fn run(input: &str) -> Result<(usize, usize)> {
     let mut searcher1 = Searcher::new();
     for n in 0.. {
         if n >= searcher1.stop_bound {

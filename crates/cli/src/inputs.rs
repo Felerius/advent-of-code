@@ -5,10 +5,11 @@ use std::{
 };
 
 use anyhow::{Context, Result};
-use collect::PuzzleId;
 use directories::ProjectDirs;
 use once_cell::sync::OnceCell;
 use ureq::Agent;
+
+use crate::PuzzleId;
 
 const USER_AGENT: &str =
     "Script by David Stangl (david@david-stangl.com, github.com/Felerius/advent-of-code)";

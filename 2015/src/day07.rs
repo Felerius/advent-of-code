@@ -1,8 +1,10 @@
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result, bail};
+use register::register;
 
 const MAX_WIRE: usize = 26 * 27;
 
-pub(crate) fn run(input: &str) -> Result<(u16, u16)> {
+#[register]
+fn run(input: &str) -> Result<(u16, u16)> {
     let mut instr = [Instruction::Assign(Input::Literal(0)); MAX_WIRE];
     for line in input.lines() {
         let (head, tail) = line.split_once(" -> ").context("invalid input")?;

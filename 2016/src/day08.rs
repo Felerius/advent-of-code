@@ -1,8 +1,10 @@
 use anyhow::Result;
 use arrayvec::ArrayString;
+use register::register;
 use utils::{input::Input, ocr};
 
-pub(crate) fn run(input: &str) -> Result<(usize, ArrayString<10>)> {
+#[register]
+fn run(input: &str) -> Result<(usize, ArrayString<10>)> {
     let mut grid = [[false; 50]; 6];
     for line in input.lines() {
         let [a, b] = line.unsigned_integers_n()?;

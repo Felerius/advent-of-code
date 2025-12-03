@@ -1,6 +1,9 @@
 use std::mem;
 
-pub(crate) fn run(input: &str) -> (usize, usize) {
+use register::register;
+
+#[register]
+fn run(input: &str) -> (usize, usize) {
     let mut current: Vec<_> = input.bytes().map(|c| c - b'0').collect();
     let mut next = Vec::new();
 

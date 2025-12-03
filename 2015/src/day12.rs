@@ -1,6 +1,8 @@
 use anyhow::{Context, Result};
+use register::register;
 
-pub(crate) fn run(input: &str) -> Result<(i64, i64)> {
+#[register]
+fn run(input: &str) -> Result<(i64, i64)> {
     let (part1, part2, rest) = eval(input.as_bytes())?;
     debug_assert!(rest.is_empty());
     Ok((part1, part2))

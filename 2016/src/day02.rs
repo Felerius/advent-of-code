@@ -1,4 +1,5 @@
-use anyhow::{bail, Result};
+use anyhow::{Result, bail};
+use register::register;
 
 const GRAPH1: &[(u8, [usize; 4])] = &[
     (b'1', [0, 0, 1, 3]),
@@ -28,7 +29,8 @@ const GRAPH2: &[(u8, [usize; 4])] = &[
     (b'D', [12, 10, 12, 12]),
 ];
 
-pub(crate) fn run(input: &str) -> Result<(String, String)> {
+#[register]
+fn run(input: &str) -> Result<(String, String)> {
     let mut v1 = 4;
     let mut v2 = 4;
     let mut part1 = String::new();

@@ -1,8 +1,10 @@
 use std::collections::VecDeque;
 
+use register::register;
 use utils::num::bits;
 
-pub(crate) fn run(input: &str) -> (usize, usize) {
+#[register]
+fn run(input: &str) -> (usize, usize) {
     let grid: Vec<_> = input.lines().map(str::as_bytes).collect();
     let mut pos = [(0, 0); 10];
     let mut num_pos = 0;

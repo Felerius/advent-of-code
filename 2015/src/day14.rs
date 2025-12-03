@@ -1,8 +1,10 @@
 use anyhow::{Context, Result};
 use itertools::Itertools;
+use register::register;
 use utils::input::Input;
 
-pub(crate) fn run(input: &str) -> Result<(u32, u32)> {
+#[register]
+fn run(input: &str) -> Result<(u32, u32)> {
     let reindeers: Vec<[u32; 3]> = input
         .lines()
         .map(Input::unsigned_integers_n)

@@ -1,10 +1,12 @@
-use anyhow::{ensure, Result};
+use anyhow::{Result, ensure};
+use register::register;
 use utils::input::Input;
 
 // Assume that node indices in the input are in the range [0, N).
 const N: usize = 100;
 
-pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
+#[register]
+fn run(input: &str) -> Result<(usize, usize)> {
     let mut lines = input.lines();
     let mut adj_rev = [0_u128; N];
     for line in lines.by_ref().take_while(|line| !line.is_empty()) {

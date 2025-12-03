@@ -1,7 +1,9 @@
 use anyhow::Result;
 use itertools::Itertools;
+use register::register;
 
-pub(crate) fn run(input: &str) -> Result<(u64, u64)> {
+#[register]
+fn run(input: &str) -> Result<(u64, u64)> {
     let nums: Vec<_> = input.lines().map(str::parse).try_collect()?;
     let sum: usize = nums.iter().sum();
 

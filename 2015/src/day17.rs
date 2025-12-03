@@ -1,7 +1,9 @@
 use anyhow::{Context, Result};
 use itertools::Itertools;
+use register::register;
 
-pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
+#[register]
+fn run(input: &str) -> Result<(usize, usize)> {
     let vals: Vec<usize> = input.lines().map(str::parse).try_collect()?;
     let n = vals.len();
     let mut dp = vec![[0; 151]; n + 1];

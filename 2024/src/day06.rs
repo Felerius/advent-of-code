@@ -1,7 +1,9 @@
-use anyhow::{ensure, Context, Result};
+use anyhow::{Context, Result, ensure};
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
+use register::register;
 
-pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
+#[register]
+fn run(input: &str) -> Result<(usize, usize)> {
     let grid: Vec<_> = input.lines().map(|l| l.as_bytes().to_vec()).collect();
     let height = grid.len();
     let width = grid[0].len();

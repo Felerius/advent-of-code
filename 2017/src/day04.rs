@@ -1,6 +1,8 @@
+use register::register;
 use utils::hash::{FastHashCollectionExt, FastHashSet};
 
-pub(crate) fn run(input: &str) -> (usize, usize) {
+#[register]
+fn run(input: &str) -> (usize, usize) {
     let mut words = FastHashSet::with_capacity(16);
     let mut anagrams = FastHashSet::with_capacity(16);
     input

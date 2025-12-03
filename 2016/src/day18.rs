@@ -1,6 +1,9 @@
 use std::iter;
 
-pub(crate) fn run(input: &str) -> (usize, usize) {
+use register::register;
+
+#[register]
+fn run(input: &str) -> (usize, usize) {
     (count_safe(input, 40), count_safe(input, 400_000))
 }
 

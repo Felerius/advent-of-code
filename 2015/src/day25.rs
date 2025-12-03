@@ -1,9 +1,11 @@
 use anyhow::Result;
+use register::register;
 use utils::input::Input;
 
 const MOD: u64 = 33_554_393;
 
-pub(crate) fn run(input: &str) -> Result<(u64, u8)> {
+#[register]
+fn run(input: &str) -> Result<(u64, u8)> {
     let [row, col] = input.unsigned_integers_n::<u32, 2>()?;
     Ok((solve(row - 1, col - 1), 0))
 }

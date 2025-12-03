@@ -1,7 +1,9 @@
-use anyhow::{bail, Result};
+use anyhow::{Result, bail};
+use register::register;
 use utils::hash::FastHashSet;
 
-pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
+#[register]
+fn run(input: &str) -> Result<(usize, usize)> {
     let mut pos1 = (0, 0);
     let mut pos2 = [(0, 0), (0, 0)];
     let mut part1 = FastHashSet::from_iter([(0, 0)]);

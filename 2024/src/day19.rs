@@ -1,12 +1,14 @@
 use std::collections::VecDeque;
 
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
+use register::register;
 use tinybitset::TinyBitSet;
 
 const ALPHABET: usize = 5;
 const MAX_PATTERN_LEN: usize = 8;
 
-pub(crate) fn run(input: &str) -> (usize, usize) {
+#[register]
+fn run(input: &str) -> (usize, usize) {
     let mut lines = input.lines();
     let mut aho_corasick = AhoCorasick::new();
     for pattern in lines.next().unwrap().split(", ") {

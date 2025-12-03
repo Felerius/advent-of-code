@@ -1,8 +1,10 @@
 use std::array;
 
 use anyhow::{Context, Result, bail};
+use register::register;
 
-pub(crate) fn run(input: &str) -> Result<(String, String)> {
+#[register]
+fn run(input: &str) -> Result<(String, String)> {
     run_var_length::<16>(input)
 }
 

@@ -1,6 +1,8 @@
+use register::register;
 use utils::md5::Stack;
 
-pub(crate) fn run(input: &str) -> (String, usize) {
+#[register]
+fn run(input: &str) -> (String, usize) {
     let mut part1 = None::<String>;
     let mut part2 = 0;
     let mut stack = Stack::new();

@@ -2,12 +2,14 @@ use std::collections::VecDeque;
 
 use anyhow::Result;
 use itertools::Itertools;
+use register::register;
 use utils::input::Input;
 
 const WIDTH: usize = 71;
 const HEIGHT: usize = 71;
 
-pub(crate) fn run(input: &str) -> Result<(usize, String)> {
+#[register]
+fn run(input: &str) -> Result<(usize, String)> {
     let bytes: Vec<_> = input
         .lines()
         .map(Input::unsigned_integers_n::<usize, 2>)

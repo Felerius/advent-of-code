@@ -1,9 +1,11 @@
 use anyhow::Result;
+use register::register;
 use utils::input::Input;
 
 const MAX: usize = 600;
 
-pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
+#[register]
+fn run(input: &str) -> Result<(usize, usize)> {
     let mut num_free = [0; MAX];
     let mut num_used = [0; MAX];
     let mut width = 0;

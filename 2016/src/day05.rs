@@ -1,19 +1,21 @@
 use std::{
     collections::BinaryHeap,
     sync::{
-        atomic::{AtomicBool, AtomicUsize, Ordering},
         Mutex,
+        atomic::{AtomicBool, AtomicUsize, Ordering},
     },
     thread,
 };
 
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use panic_message::panic_message;
+use register::register;
 use utils::md5::SingleBlock;
 
 const BLOCK_SIZE: usize = 1000;
 
-pub(crate) fn run(input: &str) -> Result<(String, String)> {
+#[register]
+fn run(input: &str) -> Result<(String, String)> {
     let state = State::new();
     for num in 1..BLOCK_SIZE {
         state.consume(num, &prepare_block(input, num));

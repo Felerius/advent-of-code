@@ -1,9 +1,11 @@
 use std::iter;
 
 use anyhow::{Context, Result};
+use register::register;
 use utils::input::Input;
 
-pub(crate) fn run(input: &str) -> Result<(usize, u8)> {
+#[register]
+fn run(input: &str) -> Result<(usize, u8)> {
     let mut lines = input.lines();
     let [a] = lines
         .nth(1)

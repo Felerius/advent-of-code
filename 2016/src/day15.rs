@@ -1,8 +1,10 @@
 use anyhow::{Context, Result};
-use num::{integer::ExtendedGcd, Integer};
+use num::{Integer, integer::ExtendedGcd};
+use register::register;
 use utils::input::Input;
 
-pub(crate) fn run(input: &str) -> Result<(i64, i64)> {
+#[register]
+fn run(input: &str) -> Result<(i64, i64)> {
     let mut eq = (0, 1);
     let mut idx = 0;
     for line in input.lines() {

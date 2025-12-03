@@ -4,13 +4,14 @@ use std::{
     time::{Duration, Instant},
 };
 
-use anyhow::{bail, Context, Result};
-use collect::{PuzzleId, Solution};
+use anyhow::{Context, Result, bail};
 use indicatif::{ProgressBar, ProgressIterator};
 use itertools::Itertools;
 use jiff::SignedDuration;
+use register::SolutionFunction;
 
 use crate::{
+    PuzzleId,
     commands::PuzzleArgs,
     inputs,
     style::{error, highlighted, print_runtime_bar, progress_style, spinner},
@@ -82,7 +83,11 @@ pub(crate) fn run(args: &Args) -> Result<()> {
     Ok(())
 }
 
-fn benchmark(puzzle_id: PuzzleId, solution: Solution, min_time: Duration) -> Result<BenchResult> {
+fn benchmark(
+    puzzle_id: PuzzleId,
+    solution: SolutionFunction,
+    min_time: Duration,
+) -> Result<BenchResult> {
     let input = inputs::get(puzzle_id)?;
     let mut runtimes = Vec::new();
     let start = Instant::now();

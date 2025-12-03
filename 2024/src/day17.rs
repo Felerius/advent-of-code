@@ -1,8 +1,10 @@
 use itertools::Itertools;
 use joinery::Joinable;
+use register::register;
 use utils::input::Input;
 
-pub(crate) fn run(input: &str) -> (String, u64) {
+#[register]
+fn run(input: &str) -> (String, u64) {
     run_testable(input, false)
 }
 

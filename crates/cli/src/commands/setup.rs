@@ -3,16 +3,18 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use anyhow::{ensure, Context, Result};
-use collect::PuzzleId;
+use anyhow::{Context, Result, ensure};
 use regex_lite::RegexBuilder;
 
-use crate::commands::{most_recent_puzzle, most_recently_edited_puzzle};
+use crate::{
+    PuzzleId,
+    commands::{most_recent_puzzle, most_recently_edited_puzzle},
+};
 
 const DEFAULT_DAY_RS_CONTENT: &str = "\
 use anyhow::Result;
 
-pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
+#[register] fn run(input: &str) -> Result<(usize, usize)> {
     Ok((0, 0))
 }
 ";

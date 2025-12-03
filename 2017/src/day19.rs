@@ -1,4 +1,7 @@
-pub(crate) fn run(input: &str) -> (String, usize) {
+use register::register;
+
+#[register]
+fn run(input: &str) -> (String, usize) {
     let grid: Vec<_> = input.lines().map(str::as_bytes).collect();
     let on_path = |x: usize, y: usize| {
         grid.get(x)

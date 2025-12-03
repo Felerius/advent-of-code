@@ -2,9 +2,11 @@ use std::{array, mem};
 
 use anyhow::Result;
 use const_array_init::const_arr;
+use register::register;
 use utils::hash::{FastHashCollectionExt, FastHashMap};
 
-pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
+#[register]
+fn run(input: &str) -> Result<(usize, usize)> {
     let mut cur_cnts = FastHashMap::<_, usize>::with_capacity(4096);
     let mut prev_cnts = FastHashMap::with_capacity(4096);
     for s in input.split_ascii_whitespace() {

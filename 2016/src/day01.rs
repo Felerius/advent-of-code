@@ -1,7 +1,9 @@
 use anyhow::{Context, Result};
+use register::register;
 use utils::hash::{FastHashCollectionExt, FastHashSet};
 
-pub(crate) fn run(input: &str) -> Result<(i16, i16)> {
+#[register]
+fn run(input: &str) -> Result<(i16, i16)> {
     let mut pos = (0_i16, 0_i16);
     let mut dir = (0, 1);
     let mut seen = FastHashSet::with_capacity(1024);

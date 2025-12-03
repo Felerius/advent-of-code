@@ -1,6 +1,7 @@
 use std::fmt::{self, Display, Formatter};
 
 use itertools::Itertools;
+use register::register;
 use tinybitset::TinyBitSet;
 
 const N: usize = 26 * 26;
@@ -8,7 +9,8 @@ const N: usize = 26 * 26;
 type AdjBitset = TinyBitSet<u64, 11>;
 
 #[allow(clippy::similar_names)]
-pub(crate) fn run(input: &str) -> (usize, String) {
+#[register]
+fn run(input: &str) -> (usize, String) {
     let mut adj = [AdjBitset::new(); N];
     for line in input.lines() {
         let line = line.as_bytes();

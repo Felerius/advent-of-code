@@ -1,4 +1,5 @@
 use anyhow::Result;
+use register::register;
 
 #[allow(clippy::unreadable_literal)]
 const SPIRAL: &[usize] = &[
@@ -11,7 +12,8 @@ const SPIRAL: &[usize] = &[
     6573553, 6902404, 7251490, 7619304, 8001525, 8260383, 8391037, 17048404,
 ];
 
-pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
+#[register]
+fn run(input: &str) -> Result<(usize, usize)> {
     let n: usize = input.parse()?;
     let mut largest_square = n.isqrt();
     largest_square -= 1 - largest_square % 2;

@@ -1,6 +1,9 @@
 use std::collections::VecDeque;
 
-pub(crate) fn run(input: &str) -> (usize, usize) {
+use register::register;
+
+#[register]
+fn run(input: &str) -> (usize, usize) {
     let grid: Vec<_> = input.lines().map(str::as_bytes).collect();
     let height = grid.len();
     let width = grid[0].len();

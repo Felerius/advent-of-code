@@ -11,7 +11,7 @@ num = { workspace = true }
 num_cpus = { workspace = true }
 rayon = { workspace = true }
 
-collect = { workspace = true }
+register = { workspace = true }
 utils = { workspace = true }
 
 [lints]

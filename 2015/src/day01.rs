@@ -1,4 +1,7 @@
-pub(crate) fn run(input: &str) -> (i32, usize) {
+use register::register;
+
+#[register]
+fn run(input: &str) -> (i32, usize) {
     let (part1, part2) =
         input
             .bytes()

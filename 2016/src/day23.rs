@@ -1,7 +1,9 @@
 use anyhow::{Context, Result};
+use register::register;
 use utils::input::Input;
 
-pub(crate) fn run(input: &str) -> Result<(u32, u32)> {
+#[register]
+fn run(input: &str) -> Result<(u32, u32)> {
     let mut lines = input.lines();
     let [a] = lines
         .nth(19)

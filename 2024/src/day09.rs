@@ -1,8 +1,10 @@
 use std::{array, cmp::Reverse, collections::BinaryHeap, iter};
 
-use anyhow::{ensure, Result};
+use anyhow::{Result, ensure};
+use register::register;
 
-pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
+#[register]
+fn run(input: &str) -> Result<(usize, usize)> {
     let input = input.as_bytes();
     ensure!(input.len() % 2 == 1);
     Ok((calc_part1(input), calc_part2(input)))

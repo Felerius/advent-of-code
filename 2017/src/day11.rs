@@ -1,6 +1,8 @@
-use anyhow::{bail, Result};
+use anyhow::{Result, bail};
+use register::register;
 
-pub(crate) fn run(input: &str) -> Result<(u32, u32)> {
+#[register]
+fn run(input: &str) -> Result<(u32, u32)> {
     let mut coord = HexCoord(0, 0);
     let mut part2 = coord.distance_to_origin();
     for dir in input.split(',') {

@@ -2,9 +2,11 @@ use std::{cmp::Reverse, collections::BinaryHeap, mem};
 
 use anyhow::Result;
 use itertools::Itertools;
+use register::register;
 use utils::input::Input;
 
-pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
+#[register]
+fn run(input: &str) -> Result<(usize, usize)> {
     let mut layers: Vec<_> = input
         .lines()
         .map(Input::unsigned_integers_n::<usize, 2>)

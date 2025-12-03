@@ -1,13 +1,15 @@
 use std::{array, cmp::Reverse};
 
 use anyhow::Result;
+use register::register;
 use utils::input::Input;
 
 mod vm;
 
 const N: usize = 127;
 
-pub(crate) fn run(input: &str) -> Result<(u16, usize)> {
+#[register]
+fn run(input: &str) -> Result<(u16, usize)> {
     // The program with p = 0 generates 127 pseudo-random numbers based on an
     // initial seed that differs from input to input. The two programs then
     // implement bubble sort, each doing one iteration of adjacent swaps per

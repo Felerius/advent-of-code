@@ -2,9 +2,11 @@ use std::iter;
 
 use anyhow::{Context, Result};
 use itertools::Itertools;
+use register::register;
 use utils::hash::{FastHashCollectionExt, FastHashMap, FastHashSet};
 
-pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
+#[register]
+fn run(input: &str) -> Result<(usize, usize)> {
     let mut lines = input.lines();
     let input = lines.next_back().context("empty input")?;
     let mut cnf = ChomskyNormalForm {

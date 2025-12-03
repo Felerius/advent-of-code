@@ -1,4 +1,7 @@
-pub(crate) fn run(input: &str) -> (usize, usize) {
+use register::register;
+
+#[register]
+fn run(input: &str) -> (usize, usize) {
     let mut abas = [[[usize::MAX; 26]; 26]; 2];
     input
         .lines()

@@ -1,4 +1,7 @@
-pub(crate) fn run(input: &str) -> (u64, u64) {
+use register::register;
+
+#[register]
+fn run(input: &str) -> (u64, u64) {
     input
         .lines()
         .map(|line| {

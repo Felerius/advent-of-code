@@ -1,7 +1,9 @@
 use anyhow::Result;
+use register::register;
 use utils::input::Input;
 
-pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
+#[register]
+fn run(input: &str) -> Result<(usize, usize)> {
     let lines: Vec<_> = input.lines().collect();
     let mut seen = vec![false; lines.len()];
 

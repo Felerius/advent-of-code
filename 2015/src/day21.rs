@@ -1,4 +1,5 @@
 use anyhow::Result;
+use register::register;
 use utils::input::Input;
 
 const WEAPONS: &[(u32, u32)] = &[(8, 4), (10, 5), (25, 6), (40, 7), (74, 8)];
@@ -26,7 +27,8 @@ const RING_COMBOS: &[(u32, u32, u32)] = &[
     (180, 3, 3),
 ];
 
-pub(crate) fn run(input: &str) -> Result<(u32, u32)> {
+#[register]
+fn run(input: &str) -> Result<(u32, u32)> {
     let [boss_hp, boss_dmg, boss_ac] = input.unsigned_integers_n::<u32, 3>()?;
     let (part1, part2) = itertools::iproduct!(WEAPONS, ARMORS, RING_COMBOS)
         .map(|((c1, dmg1), (c2, ac1), (c3, dmg2, ac2))| {

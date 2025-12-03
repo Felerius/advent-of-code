@@ -2,11 +2,13 @@ use std::iter;
 
 use anyhow::Result;
 use itertools::Itertools;
+use register::register;
 
 const BLOCK_SIZE: usize = 16;
 type BlockBitset = u16;
 
-pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
+#[register]
+fn run(input: &str) -> Result<(usize, usize)> {
     let jumps: Vec<_> = input.lines().map(str::parse).try_collect()?;
     Ok((part1(jumps.clone()), part2(jumps)))
 }

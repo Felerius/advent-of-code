@@ -1,8 +1,10 @@
 use rayon::iter::{IndexedParallelIterator, IntoParallelIterator, ParallelIterator};
+use register::register;
 
 const NUM_SEQ: usize = 19_usize.pow(4);
 
-pub(crate) fn run(input: &str) -> (u64, u32) {
+#[register]
+fn run(input: &str) -> (u64, u32) {
     let lines: Vec<_> = input.lines().collect();
     let (part1, gain) = lines
         .into_par_iter()

@@ -1,7 +1,9 @@
 use const_array_init::const_arr;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
+use register::register;
 
-pub(crate) fn run(input: &str) -> (u64, u64) {
+#[register]
+fn run(input: &str) -> (u64, u64) {
     let lines: Vec<_> = input.lines().collect();
     lines
         .into_par_iter()

@@ -1,11 +1,13 @@
 use const_array_init::const_arr;
+use register::register;
 
 const TEN_POW: [u64; 20] = const_arr!([u64; 20], |i| 10_u64.pow(i as u32));
 const MOEBIUS: [i64; 20] = [
     0, 1, -1, -1, 0, -1, 1, -1, 0, 0, 1, -1, 0, 1, 1, -1, 0, -1, 1, -1,
 ];
 
-pub(crate) fn run(input: &str) -> (u64, i64) {
+#[register]
+fn run(input: &str) -> (u64, i64) {
     let ranges = input.split(',').flat_map(|r| {
         let (l, r) = r.split_once('-').unwrap();
         let l: u64 = l.parse().unwrap();

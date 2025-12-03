@@ -1,4 +1,7 @@
-pub(crate) fn run(input: &str) -> (usize, usize) {
+use register::register;
+
+#[register]
+fn run(input: &str) -> (usize, usize) {
     input
         .lines()
         .map(|line| is_nice(line.as_bytes()))

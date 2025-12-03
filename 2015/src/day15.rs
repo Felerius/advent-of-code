@@ -1,8 +1,10 @@
 use anyhow::Result;
 use itertools::Itertools;
+use register::register;
 use utils::input::Input;
 
-pub(crate) fn run(input: &str) -> Result<(i64, i64)> {
+#[register]
+fn run(input: &str) -> Result<(i64, i64)> {
     let ingredients: Vec<[i32; 5]> = input.lines().map(Input::signed_integers_n).try_collect()?;
     let [ing1, ing2, ing3, ing4] = ingredients.try_into().expect("4 ingredients required");
 

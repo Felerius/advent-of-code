@@ -1,10 +1,12 @@
 use anyhow::Result;
 use itertools::Itertools;
+use register::register;
 use utils::input::Input;
 
 const OFFSET: i64 = 10_000_000_000_000;
 
-pub(crate) fn run(input: &str) -> Result<(i64, i64)> {
+#[register]
+fn run(input: &str) -> Result<(i64, i64)> {
     input
         .lines()
         .filter(|line| !line.is_empty())

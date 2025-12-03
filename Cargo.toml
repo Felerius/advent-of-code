@@ -19,14 +19,18 @@ indicatif = "0.18.3"
 itertools = "0.14.0"
 jiff = "0.2.16"
 joinery = "3.1.0"
+linkme = "0.3.35"
 nom = "8.0.0"
 num = "0.4.3"
 num_cpus = "1.17.0"
 once_cell = "1.21.3"
 panic-message = "0.3.0"
+proc-macro2 = "1.0.103"
+quote = "1.0.42"
 rayon = "1.11.0"
 regex-lite = "0.1.8"
 rustc-hash = "2.1.1"
+syn = { version = "2.0.110", features = ["full"] }
 tinybitset = "0.0.2"
 ureq = { version = "3.1.4", default-features = false, features = ["rustls"] }
 
@@ -35,7 +39,8 @@ aoc2016 = { path = "2016" }
 aoc2017 = { path = "2017" }
 aoc2024 = { path = "2024" }
 aoc2025 = { path = "2025" }
-collect = { path = "crates/collect" }
+register = { path = "crates/register" }
+register-macro = { path = "crates/register-macro" }
 utils = { path = "crates/utils" }
 
 [workspace.lints.rust]

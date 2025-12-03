@@ -1,9 +1,11 @@
 use anyhow::Result;
 use itertools::Itertools;
 use num::Integer;
+use register::register;
 use utils::input::Input;
 
-pub(crate) fn run(input: &str) -> Result<(usize, u16)> {
+#[register]
+fn run(input: &str) -> Result<(usize, u16)> {
     run_parameterized(input, 101, 103)
 }
 

@@ -1,8 +1,10 @@
 use std::collections::VecDeque;
 
 use anyhow::Result;
+use register::register;
 
-pub(crate) fn run(input: &str) -> Result<(u8, usize)> {
+#[register]
+fn run(input: &str) -> Result<(u8, usize)> {
     let num: usize = input.parse()?;
     let mut grid = [[false; 51]; 51];
     for (y, row) in grid.iter_mut().enumerate() {

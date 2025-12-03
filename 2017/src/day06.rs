@@ -3,11 +3,13 @@ use std::{cmp::Reverse, iter};
 use anyhow::Result;
 use arrayvec::ArrayVec;
 use itertools::Itertools;
+use register::register;
 use utils::hash::{FastHashCollectionExt, FastHashMap};
 
 type State = ArrayVec<u8, 16>;
 
-pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
+#[register]
+fn run(input: &str) -> Result<(usize, usize)> {
     let initial_state: State = input
         .split_ascii_whitespace()
         .map(str::parse)

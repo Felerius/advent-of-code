@@ -20,7 +20,7 @@ aoc2016 = { workspace = true }
 aoc2017 = { workspace = true }
 aoc2024 = { workspace = true }
 aoc2025 = { workspace = true }
-collect = { workspace = true }
+register = { workspace = true }
 
 [lints]
 workspace = true
