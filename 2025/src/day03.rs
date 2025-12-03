@@ -3,7 +3,6 @@ pub(crate) fn run(input: &str) -> (u64, u64) {
         .lines()
         .map(|line| {
             let line = line.as_bytes();
-            dbg!(line.len());
             (choose_greedy(line, 2), choose_greedy(line, 12))
         })
         .fold((0, 0), |(part1, part2), (num1, num2)| {
