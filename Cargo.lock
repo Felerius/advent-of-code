@@ -121,7 +121,6 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "const-array-init",
- "itertools",
  "register",
 ]
 
@@ -233,7 +232,6 @@ dependencies = [
  "itertools",
  "jiff",
  "once_cell",
- "regex-lite",
  "register",
  "ureq",
 ]
@@ -672,12 +670,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "regex-lite"
-version = "0.1.8"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8d942b98df5e658f56f20d592c7f868833fe38115e65c33003d8cd224b0155da"
-
-[[package]]
 name = "register"
 version = "0.1.0"
 dependencies = [
@@ -690,7 +682,6 @@ dependencies = [
 name = "register-macro"
 version = "0.1.0"
 dependencies = [
- "proc-macro2",
  "quote",
  "syn",
 ]

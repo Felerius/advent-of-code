@@ -12,7 +12,6 @@ indicatif = { workspace = true }
 itertools = { workspace = true }
 jiff = { workspace = true }
 once_cell = { workspace = true }
-regex-lite = { workspace = true }
 ureq = { workspace = true }
 
 aoc2015 = { workspace = true }

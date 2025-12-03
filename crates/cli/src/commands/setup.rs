@@ -1,10 +1,6 @@
-use std::{
-    fs,
-    path::{Path, PathBuf},
-};
+use std::{fs, path::PathBuf};
 
 use anyhow::{Context, Result, ensure};
-use regex_lite::RegexBuilder;
 
 use crate::{
     PuzzleId,
@@ -13,8 +9,10 @@ use crate::{
 
 const DEFAULT_DAY_RS_CONTENT: &str = "\
 use anyhow::Result;
+use register::register;
 
-#[register] fn run(input: &str) -> Result<(usize, usize)> {
+#[register]
+fn run(input: &str) -> Result<(usize, usize)> {
     Ok((0, 0))
 }
 ";
@@ -73,34 +71,8 @@ pub(crate) fn run(args: &Args) -> Result<()> {
         id.year
     );
 
-    adjust_lib_rs(&lib_rs_path, id)?;
     fs::write(day_rs_path, DEFAULT_DAY_RS_CONTENT).context("failed to write solution file")?;
 
     println!("Set up puzzle {id}");
-    Ok(())
-}
-
-fn adjust_lib_rs(lib_rs_path: &Path, id: PuzzleId) -> Result<()> {
-    let mut contents = fs::read_to_string(lib_rs_path).context("failed to read lib.rs")?;
-    let regex = RegexBuilder::new(r"^collect::collect!\(\d+; ([\d, ]+)\);$")
-        .multi_line(true)
-        .build()
-        .expect("error in hardcoded regex");
-    let captures = regex
-        .captures(&contents)
-        .context("could not find collect::collect! call in lib.rs")?;
-
-    let mut days: Vec<_> = captures[1]
-        .split(|c: char| c == ',' || c.is_whitespace())
-        .filter(|s| !s.is_empty())
-        .map(str::to_string)
-        .collect();
-    days.push(format!("{:02}", id.day));
-    days.sort_unstable();
-    let new_days_str = days.join(", ");
-
-    let range = captures.get(1).unwrap().range();
-    contents.replace_range(range, &new_days_str);
-    fs::write(lib_rs_path, contents).context("failed to write lib.rs")?;
     Ok(())
 }
