@@ -5,8 +5,8 @@ edition.workspace = true
 
 [dependencies]
 anyhow.workspace = true
-array-const-fn-init.workspace = true
 arrayvec.workspace = true
+const-array-init.workspace = true
 itertools.workspace = true
 joinery.workspace = true
 num.workspace = true

@@ -1,7 +1,7 @@
 use std::{array, mem};
 
 use anyhow::Result;
-use array_const_fn_init::array_const_fn_init;
+use const_array_init::const_arr;
 use utils::hash::{FastHashCollectionExt, FastHashMap};
 
 pub(crate) fn run(input: &str) -> Result<(usize, usize)> {
@@ -44,11 +44,7 @@ fn simulate_step(
         .sum()
 }
 
-const TEN_POW: [u64; 20] = array_const_fn_init![ten_pow; 20];
-
-const fn ten_pow(i: usize) -> u64 {
-    10_u64.pow(i as u32)
-}
+const TEN_POW: [u64; 20] = const_arr!([u64; 20], |i| 10_u64.pow(i as u32));
 
 #[cfg(test)]
 mod tests {

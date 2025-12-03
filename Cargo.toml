@@ -9,7 +9,6 @@ edition = "2024"
 
 [workspace.dependencies]
 anyhow = "1.0.100"
-array-const-fn-init = "0.1.1"
 arrayvec = "0.7.6"
 clap = { version = "4.5.53", features = ["derive"] }
 concat-idents = "1.1.5"

@@ -104,9 +104,9 @@ name = "aoc2024"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "array-const-fn-init",
  "arrayvec",
  "collect",
+ "const-array-init",
  "itertools",
  "joinery",
  "num",
@@ -124,12 +124,6 @@ dependencies = [
  "const-array-init",
  "itertools",
 ]
-
-[[package]]
-name = "array-const-fn-init"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8bcb85e548c05d407fa6faff46b750ba287714ef32afc0f5e15b4641ffd6affb"
 
 [[package]]
 name = "arrayvec"
