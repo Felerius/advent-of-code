@@ -4,15 +4,15 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
-anyhow.workspace = true
-arrayvec.workspace = true
-itertools.workspace = true
-num.workspace = true
-num_cpus.workspace = true
-rayon.workspace = true
+anyhow = { workspace = true }
+arrayvec = { workspace = true }
+itertools = { workspace = true }
+num = { workspace = true }
+num_cpus = { workspace = true }
+rayon = { workspace = true }
 
-collect.workspace = true
-utils.workspace = true
+collect = { workspace = true }
+utils = { workspace = true }
 
 [lints]
 workspace = true
