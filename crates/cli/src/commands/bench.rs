@@ -12,7 +12,7 @@ use register::SolutionFunction;
 
 use crate::{
     PuzzleId,
-    commands::PuzzleArgs,
+    commands::MultiPuzzleArgs,
     inputs,
     style::{error, highlighted, print_runtime_bar, progress_style, spinner},
 };
@@ -20,7 +20,7 @@ use crate::{
 #[derive(clap::Args)]
 pub(crate) struct Args {
     #[clap(flatten)]
-    puzzles: PuzzleArgs,
+    puzzles: MultiPuzzleArgs,
 
     /// Minimum time to run each benchmark for.
     #[clap(short, long, default_value = "1s", value_parser = parse_bench_time)]
@@ -41,25 +41,25 @@ fn parse_bench_time(s: &str) -> Result<Duration> {
 }
 
 pub(crate) fn run(args: &Args) -> Result<()> {
-    let puzzles = args.puzzles.selected_puzzles()?;
+    let puzzles = args.puzzles.evaluate()?;
     if let &[(puzzle_id, solution)] = puzzles.as_slice() {
         if args.bar {
             eprintln!("{}", error("--bar is only supported for multiple puzzles"));
         }
 
         let spinner = spinner(format!("Benchmarking {puzzle_id}"), 0);
-        let bench_result = benchmark(puzzle_id, solution, args.time)?;
+        let bench_result = benchmark(puzzle_id, solution.func, args.time)?;
         spinner.finish_and_clear();
         println!("{}: {}", highlighted(puzzle_id), bench_result);
         return Ok(());
     }
 
-    let progress_bar = ProgressBar::new(puzzles.len() as u64).with_style(progress_style());
+    let progress_bar = ProgressBar::new(puzzles.len().get() as u64).with_style(progress_style());
     progress_bar.tick(); // Immediately print with the bar with zero progress
     let mut benchmarked: Vec<_> = puzzles
         .into_iter()
         .map(|(puzzle_id, solution)| {
-            anyhow::Ok((puzzle_id, benchmark(puzzle_id, solution, args.time)?))
+            anyhow::Ok((puzzle_id, benchmark(puzzle_id, solution.func, args.time)?))
         })
         .progress_with(progress_bar)
         .try_collect()?;

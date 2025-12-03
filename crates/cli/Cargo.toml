@@ -11,6 +11,8 @@ directories = { workspace = true }
 indicatif = { workspace = true }
 itertools = { workspace = true }
 jiff = { workspace = true }
+mitsein = { workspace = true }
+nutype = { workspace = true }
 once_cell = { workspace = true }
 ureq = { workspace = true }
 

@@ -2,17 +2,20 @@ mod bench;
 mod run;
 mod setup;
 
-use std::str::FromStr;
+use std::{fs, str::FromStr, time::SystemTime};
 
-use anyhow::{Context, Error, Result, bail, format_err};
+use anyhow::{Context, Error, Result, bail};
 use clap::Parser;
 use jiff::{
     Zoned,
     tz::{Offset, TimeZone},
 };
-use register::SolutionFunction;
+use mitsein::{iter1::IteratorExt, vec1::Vec1};
 
-use crate::{PuzzleId, all_solutions};
+use crate::{
+    Day, PuzzleId, Year,
+    solutions::{self, DaySolution},
+};
 
 #[derive(Parser)]
 enum Args {
@@ -35,49 +38,17 @@ pub(crate) fn run() -> Result<()> {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
-enum PuzzleSelection {
-    DayInMostRecentYear(u8),
-    Year(u16),
-    Single(PuzzleId),
-}
-
-impl FromStr for PuzzleSelection {
-    type Err = Error;
-
-    fn from_str(s: &str) -> Result<Self> {
-        if let Some((year, day)) = s.split_once('-') {
-            let year = year.parse().context("invalid <year> in <year>-<day>")?;
-            let day = day.parse().context("invalid <day> in <year>-<day>")?;
-            return Ok(Self::Single(PuzzleId { year, day }));
-        }
-
-        if let Ok(num) = s.parse() {
-            if let Some(day) = u8::try_from(num).ok().filter(|day| (1..=25).contains(day)) {
-                return Ok(Self::DayInMostRecentYear(day));
-            } else if num >= 2015 {
-                return Ok(Self::Year(num));
-            }
-        }
-
-        bail!("invalid puzzle selection")
-    }
-}
-
 #[derive(clap::Args)]
 #[group(required = false, multiple = false)]
-struct PuzzleArgs {
+struct MultiPuzzleArgs {
     /// Select puzzles to run by year and/or day.
     ///
-    /// Supports the following formats:
-    ///
-    /// - `<day>`: run <day> in the most recent year
-    /// - `<year>`: run all puzzles in <year>
-    /// - `<year>-<day>`: run <day> in <year>
-    #[clap(verbatim_doc_comment)]
-    puzzles: Option<PuzzleSelection>,
+    /// Supports the following formats: <year>-<day>, <year>, and <day> (in the
+    /// most recent year).
+    puzzles: Option<MultiPuzzleSelector>,
 
-    /// Run the puzzle whose solution file was most recently edited (this is the default).
+    /// Run the puzzle whose solution file was most recently edited (this is the
+    /// default).
     #[clap(long)]
     most_recently_edited: bool,
 
@@ -90,74 +61,108 @@ struct PuzzleArgs {
     most_recent: bool,
 }
 
-impl PuzzleArgs {
-    fn derive_filters(&self) -> Result<(Option<u16>, Option<u8>)> {
-        let selection = if let Some(selection) = self.puzzles {
-            Some(selection)
-        } else if self.all {
-            None
-        } else if self.most_recent {
-            Some(PuzzleSelection::Single(most_recent_puzzle()?))
-        } else {
-            Some(PuzzleSelection::Single(most_recently_edited_puzzle()?))
-        };
+impl MultiPuzzleArgs {
+    fn evaluate(&self) -> Result<Vec1<(PuzzleId, DaySolution)>> {
+        let mut solutions = solutions::collect()?;
+        solutions.sort_unstable_by_key(|(id, _)| *id);
 
-        let (chosen_year, chosen_day) = match selection {
-            Some(PuzzleSelection::DayInMostRecentYear(day)) => {
-                let year = most_recent_puzzle()?.year;
-                (Some(year), Some(day))
+        let (maybe_year, maybe_day) = if let Some(selector) = self.puzzles {
+            match selector {
+                MultiPuzzleSelector::DayInMostRecentYear(day) => {
+                    let year = most_recent_puzzle()?.year;
+                    (Some(year), Some(day))
+                }
+                MultiPuzzleSelector::Year(year) => (Some(year), None),
+                MultiPuzzleSelector::Single(id) => (Some(id.year), Some(id.day)),
             }
-            Some(PuzzleSelection::Year(year)) => (Some(year), None),
-            Some(PuzzleSelection::Single(id)) => (Some(id.year), Some(id.day)),
-            None => (None, None),
+        } else if self.all {
+            (None, None)
+        } else if self.most_recent {
+            let id = most_recent_puzzle()?;
+            (Some(id.year), Some(id.day))
+        } else {
+            assert!(self.most_recently_edited, "should be ensured by clap");
+            return most_recently_edited_puzzle(solutions).map(Vec1::from_one);
         };
 
-        Ok((chosen_year, chosen_day))
-    }
-
-    fn selected_puzzles(&self) -> Result<Vec<(PuzzleId, SolutionFunction)>> {
-        let (chosen_year, chosen_day) = self.derive_filters()?;
-        let selected: Vec<_> = all_solutions()
+        solutions
+            .into_iter()
             .filter(|(id, _)| {
-                chosen_year.is_none_or(|year| id.year == year)
-                    && chosen_day.is_none_or(|day| id.day == day)
+                maybe_year.is_none_or(|year| id.year == year)
+                    && maybe_day.is_none_or(|day| id.day == day)
             })
-            .collect();
+            .try_collect1()
+            .ok()
+            .context("no puzzles found for selection")
+    }
+}
 
-        if selected.is_empty() {
-            bail!("no puzzles found for selection")
+#[derive(Debug, Clone, Copy)]
+enum MultiPuzzleSelector {
+    DayInMostRecentYear(Day),
+    Year(Year),
+    Single(PuzzleId),
+}
+
+impl FromStr for MultiPuzzleSelector {
+    type Err = Error;
+
+    #[expect(
+        clippy::same_functions_in_if_condition,
+        reason = "we're parsing different types"
+    )]
+    fn from_str(s: &str) -> Result<Self> {
+        if let Ok(id) = s.parse() {
+            Ok(Self::Single(id))
+        } else if let Ok(year) = s.parse() {
+            Ok(Self::Year(year))
+        } else if let Ok(day) = s.parse() {
+            Ok(Self::DayInMostRecentYear(day))
+        } else {
+            bail!("invalid puzzle selector: {s:?}")
         }
-
-        Ok(selected)
     }
 }
 
 fn most_recent_puzzle() -> Result<PuzzleId> {
     let est = TimeZone::fixed(Offset::constant(-5));
     let date_est = Zoned::now().with_time_zone(est).date();
-    let year = u16::try_from(date_est.year())
-        .context("current year is negative, AoC doesn't exist yet")?;
+    let year = u16::try_from(date_est.year()).context("current year is negative!?")?;
     let (year, day) = if date_est.month() == 12 {
-        #[allow(
+        #[expect(
             clippy::cast_sign_loss,
             reason = "day() is guaranteed to be in [1, 31]"
         )]
-        (year, (date_est.day() as u8).min(25))
+        let day = date_est.day() as u8;
+        let day = Day::try_new(day.min(25)).expect("check should ensure validity");
+        (year, day)
     } else {
-        (year - 1, 25)
+        (year - 1, Day::TWENTY_FIVE)
     };
+
+    let year = Year::try_new(year).context("before the start of AoC")?;
     Ok(PuzzleId { year, day })
 }
 
-fn most_recently_edited_puzzle() -> Result<PuzzleId> {
-    all_solutions()
-        .filter_map(|(id, _)| {
-            let source_file = format!("{}/src/day{:02}.rs", id.year, id.day);
-            let metadata = std::fs::metadata(source_file).ok()?;
-            let modified = metadata.modified().ok()?;
-            Some((id, modified))
-        })
-        .max_by_key(|&(_, modified)| modified)
-        .map(|(id, _)| id)
-        .ok_or_else(|| format_err!("No puzzles found. Wrong directory?"))
+fn most_recently_edited_puzzle(
+    solutions: impl IntoIterator<Item = (PuzzleId, DaySolution)>,
+) -> Result<(PuzzleId, DaySolution)> {
+    solutions
+        .into_iter()
+        .try_fold(None::<(_, _, _)>, |max, (id, sol)| {
+            let modified_time = file_modified_time(sol.file).with_context(|| {
+                format!("failed to determine modification time of {:?}", sol.file)
+            })?;
+            if max.is_none_or(|(t, ..)| t < modified_time) {
+                anyhow::Ok(Some((modified_time, id, sol)))
+            } else {
+                Ok(max)
+            }
+        })?
+        .context("no puzzles found")
+        .map(|(_, id, sol)| (id, sol))
+}
+
+fn file_modified_time(path: &str) -> Result<SystemTime> {
+    Ok(fs::metadata(path)?.modified()?)
 }

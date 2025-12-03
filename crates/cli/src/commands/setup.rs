@@ -3,8 +3,9 @@ use std::{fs, path::PathBuf};
 use anyhow::{Context, Result, ensure};
 
 use crate::{
-    PuzzleId,
+    Day, PuzzleId,
     commands::{most_recent_puzzle, most_recently_edited_puzzle},
+    solutions,
 };
 
 const DEFAULT_DAY_RS_CONTENT: &str = "\
@@ -21,7 +22,6 @@ fn run(input: &str) -> Result<(usize, usize)> {
 #[group(required = true, multiple = false)]
 pub(crate) struct Args {
     /// Setup the specified puzzle (format: <year>-<day>).
-    #[clap(value_parser = parse_puzzle_id)]
     puzzle: Option<PuzzleId>,
 
     /// Setup next puzzle after the most recently edited.
@@ -36,11 +36,13 @@ pub(crate) struct Args {
 impl Args {
     fn puzzle_id(&self) -> Result<PuzzleId> {
         if self.next {
-            let last = most_recently_edited_puzzle()?;
-            ensure!(last.day < 25, "no more puzzles in {}", last.year);
+            let solutions = solutions::collect()?;
+            let (PuzzleId { year, day }, _) = most_recently_edited_puzzle(solutions)?;
+            let next_day = Day::try_new(day.into_inner() + 1)
+                .with_context(|| format!("no more days in {year}"))?;
             Ok(PuzzleId {
-                year: last.year,
-                day: last.day + 1,
+                year,
+                day: next_day,
             })
         } else if self.most_recent {
             most_recent_puzzle()
@@ -50,13 +52,6 @@ impl Args {
                 .expect("clap should've ensured one argument being present"))
         }
     }
-}
-
-fn parse_puzzle_id(s: &str) -> Result<PuzzleId> {
-    let (year, day) = s.split_once('-').context("invalid <year>-<day>")?;
-    let year = year.parse().context("invalid year")?;
-    let day = day.parse().context("invalid day")?;
-    Ok(PuzzleId { year, day })
 }
 
 pub(crate) fn run(args: &Args) -> Result<()> {
