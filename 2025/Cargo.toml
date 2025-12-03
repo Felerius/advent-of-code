@@ -1,0 +1,14 @@
+[package]
+name = "aoc2025"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+const-array-init.workspace = true
+itertools.workspace = true
+
+collect.workspace = true
+
+[lints]
+workspace = true

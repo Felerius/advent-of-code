@@ -19,6 +19,7 @@ aoc2015.workspace = true
 aoc2016.workspace = true
 aoc2017.workspace = true
 aoc2024.workspace = true
+aoc2025.workspace = true
 collect.workspace = true
 
 [lints]

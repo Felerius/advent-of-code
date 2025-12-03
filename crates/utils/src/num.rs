@@ -1,6 +1,6 @@
 use std::iter;
 
-use num::{one, PrimInt};
+use num::{PrimInt, one};
 
 pub fn bits(mut m: impl PrimInt) -> impl Iterator<Item = usize> {
     iter::from_fn(move || {

@@ -11,6 +11,7 @@ const ALL_YEARS: &[&[(PuzzleId, Solution)]] = &[
     aoc2016::SOLUTIONS,
     aoc2017::SOLUTIONS,
     aoc2024::SOLUTIONS,
+    aoc2025::SOLUTIONS,
 ];
 
 fn all_solutions() -> impl Iterator<Item = (PuzzleId, Solution)> {
