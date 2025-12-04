@@ -81,7 +81,6 @@ impl MultiPuzzleArgs {
             let id = most_recent_puzzle()?;
             (Some(id.year), Some(id.day))
         } else {
-            assert!(self.most_recently_edited, "should be ensured by clap");
             return most_recently_edited_puzzle(solutions).map(Vec1::from_one);
         };
 
