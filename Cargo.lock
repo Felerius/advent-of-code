@@ -125,6 +125,7 @@ dependencies = [
  "itertools",
  "ndarray",
  "register",
+ "utils",
 ]
 
 [[package]]
@@ -1127,6 +1128,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "arrayvec",
+ "ndarray",
  "num",
  "rustc-hash",
 ]

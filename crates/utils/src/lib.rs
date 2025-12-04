@@ -1,3 +1,4 @@
+pub mod grid;
 pub mod hash;
 pub mod input;
 pub mod md5;
