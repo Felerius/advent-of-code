@@ -120,6 +120,7 @@ name = "aoc2025"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "arrayvec",
  "const-array-init",
  "itertools",
  "ndarray",

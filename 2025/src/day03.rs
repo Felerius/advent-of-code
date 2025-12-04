@@ -1,3 +1,4 @@
+use arrayvec::ArrayVec;
 use register::register;
 
 #[register]
@@ -6,14 +7,37 @@ fn run(input: &str) -> (u64, u64) {
         .lines()
         .map(|line| {
             let line = line.as_bytes();
-            (choose_greedy(line, 2), choose_greedy(line, 12))
+            (choose_greedy::<2>(line), choose_greedy::<12>(line))
         })
         .fold((0, 0), |(part1, part2), (num1, num2)| {
             (part1 + num1, part2 + num2)
         })
 }
 
-fn choose_greedy(mut line: &[u8], num: usize) -> u64 {
+fn choose_greedy<const N: usize>(line: &[u8]) -> u64 {
+    let mut digits = ArrayVec::<_, N>::new();
+    for (i, &d) in line.iter().enumerate() {
+        let min_needed = N.saturating_sub(line.len() - i);
+        while digits.len() > min_needed
+            && let Some(&last) = digits.last()
+            && d > last
+        {
+            digits.pop();
+        }
+
+        if digits.len() < N {
+            digits.push(d);
+        }
+    }
+
+    debug_assert_eq!(digits.len(), N);
+    digits
+        .into_iter()
+        .fold(0, |num, d| num * 10 + u64::from(d - b'0'))
+}
+
+#[expect(dead_code, reason = "alternative implementation")]
+fn choose_greedy_slow(mut line: &[u8], num: usize) -> u64 {
     let mut res = 0;
     for i in 0..num {
         let remaining = num - i - 1;
