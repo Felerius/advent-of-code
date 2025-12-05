@@ -16,7 +16,7 @@ pub(crate) fn run(args: &Args) -> Result<()> {
 
         let input = inputs::get(puzzle_id)?;
         let (part1, part2) =
-            (solution.func)(&input).with_context(|| format!("solution for {puzzle_id} failed"))?;
+            (solution.main)(&input).with_context(|| format!("solution for {puzzle_id} failed"))?;
         spinner.finish_and_clear();
 
         let star = aoc_star();

@@ -14,7 +14,7 @@ use mitsein::{iter1::IteratorExt, vec1::Vec1};
 
 use crate::{
     Day, PuzzleId, Year,
-    solutions::{self, DaySolution},
+    solutions::{PuzzleSolutions, Solutions},
 };
 
 #[derive(Parser)]
@@ -62,10 +62,7 @@ struct MultiPuzzleArgs {
 }
 
 impl MultiPuzzleArgs {
-    fn evaluate(&self) -> Result<Vec1<(PuzzleId, DaySolution)>> {
-        let mut solutions = solutions::collect()?;
-        solutions.sort_unstable_by_key(|(id, _)| *id);
-
+    fn evaluate(&self) -> Result<Vec1<(PuzzleId, &'static PuzzleSolutions)>> {
         let (maybe_year, maybe_day) = if let Some(selector) = self.puzzles {
             match selector {
                 MultiPuzzleSelector::DayInMostRecentYear(day) => {
@@ -81,18 +78,22 @@ impl MultiPuzzleArgs {
             let id = most_recent_puzzle()?;
             (Some(id.year), Some(id.day))
         } else {
-            return most_recently_edited_puzzle(solutions).map(Vec1::from_one);
+            return most_recently_edited_puzzle().map(Vec1::from_one);
         };
 
-        solutions
-            .into_iter()
+        let mut selected: Vec1<_> = Solutions::get()?
+            .by_id
+            .iter()
+            .map(|(id, solutions)| (*id, solutions))
             .filter(|(id, _)| {
                 maybe_year.is_none_or(|year| id.year == year)
                     && maybe_day.is_none_or(|day| id.day == day)
             })
             .try_collect1()
             .ok()
-            .context("no puzzles found for selection")
+            .context("no puzzles found for selection")?;
+        selected.sort_unstable_by_key(|(id, _)| *id);
+        Ok(selected)
     }
 }
 
@@ -143,23 +144,27 @@ fn most_recent_puzzle() -> Result<PuzzleId> {
     Ok(PuzzleId { year, day })
 }
 
-fn most_recently_edited_puzzle(
-    solutions: impl IntoIterator<Item = (PuzzleId, DaySolution)>,
-) -> Result<(PuzzleId, DaySolution)> {
-    solutions
-        .into_iter()
-        .try_fold(None::<(_, _, _)>, |max, (id, sol)| {
-            let modified_time = file_modified_time(sol.file).with_context(|| {
-                format!("failed to determine modification time of {:?}", sol.file)
-            })?;
-            if max.is_none_or(|(t, ..)| t < modified_time) {
-                anyhow::Ok(Some((modified_time, id, sol)))
+fn most_recently_edited_puzzle() -> Result<(PuzzleId, &'static PuzzleSolutions)> {
+    let solutions = Solutions::get()?;
+    let (_, id) = solutions
+        .by_file
+        .iter()
+        .map(|(&file, &id)| {
+            let modified_time = file_modified_time(file)
+                .with_context(|| format!("failed to determine modification time of {file:?}"))?;
+            anyhow::Ok((modified_time, id))
+        })
+        .reduce(|sol1, sol2| {
+            let (t1, id1) = sol1?;
+            let (t2, id2) = sol2?;
+            if t1 > t2 {
+                Ok((t1, id1))
             } else {
-                Ok(max)
+                Ok((t2, id2))
             }
-        })?
-        .context("no puzzles found")
-        .map(|(_, id, sol)| (id, sol))
+        })
+        .context("no puzzles found")??;
+    Ok((id, &solutions.by_id[&id]))
 }
 
 fn file_modified_time(path: &str) -> Result<SystemTime> {

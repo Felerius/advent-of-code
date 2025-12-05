@@ -5,7 +5,6 @@ use anyhow::{Context, Result, ensure};
 use crate::{
     Day, PuzzleId,
     commands::{most_recent_puzzle, most_recently_edited_puzzle},
-    solutions,
 };
 
 const DEFAULT_DAY_RS_CONTENT: &str = "\
@@ -36,8 +35,7 @@ pub(crate) struct Args {
 impl Args {
     fn puzzle_id(&self) -> Result<PuzzleId> {
         if self.next {
-            let solutions = solutions::collect()?;
-            let (PuzzleId { year, day }, _) = most_recently_edited_puzzle(solutions)?;
+            let (PuzzleId { year, day }, _) = most_recently_edited_puzzle()?;
             let next_day = Day::try_new(day.into_inner() + 1)
                 .with_context(|| format!("no more days in {year}"))?;
             Ok(PuzzleId {

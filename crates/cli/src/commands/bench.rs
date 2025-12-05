@@ -4,7 +4,7 @@ use std::{
     time::{Duration, Instant},
 };
 
-use anyhow::{Context, Result, bail};
+use anyhow::{Context, Result, ensure};
 use indicatif::{ProgressBar, ProgressIterator};
 use itertools::Itertools;
 use jiff::SignedDuration;
@@ -33,22 +33,19 @@ pub(crate) struct Args {
 
 fn parse_bench_time(s: &str) -> Result<Duration> {
     let duration: SignedDuration = s.parse()?;
-    if !duration.is_positive() {
-        bail!("must be positive");
-    }
-
+    ensure!(duration.is_positive(), "must be positive");
     Ok(duration.unsigned_abs())
 }
 
 pub(crate) fn run(args: &Args) -> Result<()> {
     let puzzles = args.puzzles.evaluate()?;
-    if let &[(puzzle_id, solution)] = puzzles.as_slice() {
+    if let [(puzzle_id, solutions)] = puzzles.as_slice() {
         if args.bar {
             eprintln!("{}", error("--bar is only supported for multiple puzzles"));
         }
 
         let spinner = spinner(format!("Benchmarking {puzzle_id}"), 0);
-        let bench_result = benchmark(puzzle_id, solution.func, args.time)?;
+        let bench_result = benchmark(*puzzle_id, solutions.main, args.time)?;
         spinner.finish_and_clear();
         println!("{}: {}", highlighted(puzzle_id), bench_result);
         return Ok(());
@@ -59,7 +56,7 @@ pub(crate) fn run(args: &Args) -> Result<()> {
     let mut benchmarked: Vec<_> = puzzles
         .into_iter()
         .map(|(puzzle_id, solution)| {
-            anyhow::Ok((puzzle_id, benchmark(puzzle_id, solution.func, args.time)?))
+            anyhow::Ok((puzzle_id, benchmark(puzzle_id, solution.main, args.time)?))
         })
         .progress_with(progress_bar)
         .try_collect()?;
