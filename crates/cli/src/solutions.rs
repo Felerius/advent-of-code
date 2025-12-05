@@ -16,7 +16,7 @@ pub(crate) struct Solutions {
 impl Solutions {
     pub(crate) fn get() -> Result<&'static Self> {
         static INSTANCE: OnceCell<Solutions> = OnceCell::new();
-        dbg!(INSTANCE.get_or_try_init(Self::collect))
+        INSTANCE.get_or_try_init(Self::collect)
     }
 
     fn collect() -> Result<Self> {

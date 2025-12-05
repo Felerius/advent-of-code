@@ -36,7 +36,19 @@ fn choose_greedy<const N: usize>(line: &[u8]) -> u64 {
         .fold(0, |num, d| num * 10 + u64::from(d - b'0'))
 }
 
-#[expect(dead_code, reason = "alternative implementation")]
+#[register]
+fn search_full_for_every_digit(input: &str) -> (u64, u64) {
+    input
+        .lines()
+        .map(|line| {
+            let line = line.as_bytes();
+            (choose_greedy_slow(line, 2), choose_greedy_slow(line, 12))
+        })
+        .fold((0, 0), |(part1, part2), (num1, num2)| {
+            (part1 + num1, part2 + num2)
+        })
+}
+
 fn choose_greedy_slow(mut line: &[u8], num: usize) -> u64 {
     let mut res = 0;
     for i in 0..num {

@@ -8,13 +8,7 @@ const MOEBIUS: [i64; 20] = [
 
 #[register]
 fn run(input: &str) -> (u64, i64) {
-    let ranges = input.split(',').flat_map(|r| {
-        let (l, r) = r.split_once('-').unwrap();
-        let l: u64 = l.parse().unwrap();
-        let r: u64 = r.parse().unwrap();
-        split_range(l, r)
-    });
-
+    let ranges = parse(input).flat_map(|(l, r)| split_range(l, r));
     let mut part1 = 0;
     let mut part2 = 0;
     for (low, high, digits) in ranges {
@@ -70,15 +64,31 @@ fn num_digits(x: u64) -> usize {
     x.ilog10() as usize + 1
 }
 
-#[expect(dead_code, reason = "alternative implementation")]
-fn is_silly_slow(x: u64) -> bool {
+fn parse(input: &str) -> impl Iterator<Item = (u64, u64)> + '_ {
+    input.split(',').map(|line| {
+        let (l, r) = line.split_once('-').unwrap();
+        let l: u64 = l.parse().unwrap();
+        let r: u64 = r.parse().unwrap();
+        (l, r)
+    })
+}
+
+#[register]
+fn every_number(input: &str) -> (u64, u64) {
+    parse(input)
+        .flat_map(|(l, r)| l..=r)
+        .fold((0_u64, 0_u64), |(p1, p2), x| {
+            (p1 + u64::from(is_silly(x)), p2 + u64::from(is_silly2(x)))
+        })
+}
+
+fn is_silly(x: u64) -> bool {
     let digits = num_digits(x);
     let ten_pow = TEN_POW[digits / 2];
     digits.is_multiple_of(2) && x / ten_pow == x % ten_pow
 }
 
-#[expect(dead_code, reason = "alternative implementation")]
-fn is_silly2_slow(x: u64) -> bool {
+fn is_silly2(x: u64) -> bool {
     let digits = num_digits(x);
     (2..=digits).filter(|&i| digits.is_multiple_of(i)).any(|i| {
         let w = digits / i;
@@ -88,13 +98,23 @@ fn is_silly2_slow(x: u64) -> bool {
     })
 }
 
-#[expect(dead_code, reason = "alternative implementation")]
-fn is_silly_super_slow(x: u64) -> bool {
+#[register]
+fn every_number_string(input: &str) -> (u64, u64) {
+    parse(input)
+        .flat_map(|(l, r)| l..=r)
+        .fold((0_u64, 0_u64), |(p1, p2), x| {
+            (
+                p1 + u64::from(is_silly_string(x)),
+                p2 + u64::from(is_silly2_string(x)),
+            )
+        })
+}
+
+fn is_silly_string(x: u64) -> bool {
     let s = x.to_string().into_bytes();
     s.len().is_multiple_of(2) && s[..s.len() / 2] == s[s.len() / 2..]
 }
-#[expect(dead_code, reason = "alternative implementation")]
-fn is_silly2_super_slow(x: u64) -> bool {
+fn is_silly2_string(x: u64) -> bool {
     let s = x.to_string().into_bytes();
     (2..=s.len())
         .filter(|&x| s.len().is_multiple_of(x))

@@ -9,10 +9,6 @@ pub(crate) fn highlighted<D: Display>(text: D) -> StyledObject<D> {
     console::style(text).blue().bold()
 }
 
-pub(crate) fn error<D: Display>(text: D) -> StyledObject<D> {
-    console::style(text).red().bold()
-}
-
 pub(crate) fn aoc_star() -> StyledObject<&'static str> {
     // color 227 is #ffff5f, which is quite close to the #ffff66 used on the website
     console::style("*").fg(Color::Color256(227))

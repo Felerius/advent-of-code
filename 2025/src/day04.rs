@@ -38,8 +38,8 @@ fn run(input: &str) -> (usize, usize) {
     (part1, part2)
 }
 
-#[expect(dead_code, reason = "alternative implementation")]
-fn run_slow(input: &str) -> (usize, usize) {
+#[register]
+fn slow(input: &str) -> (usize, usize) {
     let height = input.lines().count();
     let width = input.lines().next().map_or(0, str::len);
     let mut grid = Array2::from_elem((height + 2, width + 2), b'.');
