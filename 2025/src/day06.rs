@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::{iter, str::FromStr};
 
 use anyhow::{Context, Result};
 use itertools::izip;
@@ -8,55 +8,59 @@ use register::register;
 fn run(input: &str) -> Result<(u64, u64)> {
     let mut lines = input.lines();
     let operator_line = lines.next_back().context("empty input")?;
-    let mut columns: Vec<_> = operator_line
-        .as_bytes()
-        .chunk_by(|_, &b| b.is_ascii_whitespace())
-        .map(|chunk| (chunk[0] == b'*', chunk.len()))
+    let mut part1_aggs: Vec<_> = operator_line
+        .bytes()
+        .filter(|&b| !b.is_ascii_whitespace())
+        .map(|b| Aggregator::new(b == b'*'))
         .collect();
-
     let mut vertical_values = vec![None; operator_line.len()];
-    let mut part1_aggs: Vec<_> = columns
-        .iter()
-        .map(|(is_mul, _)| u64::from(*is_mul))
-        .collect();
     for line in lines {
-        if line.len() > vertical_values.len() {
-            columns.last_mut().unwrap().1 += line.len() - vertical_values.len();
-            vertical_values.resize(line.len(), None);
-        }
-
-        for (i, d) in line.bytes().enumerate() {
-            if d.is_ascii_digit() {
-                let digit = u64::from(d - b'0');
-                vertical_values[i] = Some(vertical_values[i].unwrap_or(0) * 10 + digit);
+        vertical_values.resize(line.len().max(vertical_values.len()), None);
+        for (b, val) in izip!(line.bytes(), &mut vertical_values) {
+            if b.is_ascii_digit() {
+                *val = Some(val.unwrap_or(0) * 10 + u64::from(b - b'0'));
             }
         }
 
         let line_values = line.split_ascii_whitespace().map(u64::from_str);
-        for ((is_mut, _), agg, value) in izip!(&columns, &mut part1_aggs, line_values) {
-            if *is_mut {
-                *agg *= value?;
-            } else {
-                *agg += value?;
-            }
+        for (value, agg) in izip!(line_values, &mut part1_aggs) {
+            agg.push(value?);
         }
     }
 
-    let part1 = part1_aggs.iter().sum();
-    let mut offset = 0;
-    let part2 = columns
-        .iter()
-        .map(|&(is_mul, width)| {
-            let init = u64::from(is_mul);
-            offset += width;
-            vertical_values[offset - width..offset]
-                .iter()
-                .filter_map(|&v| v)
-                .fold(init, |acc, v| if is_mul { acc * v } else { acc + v })
-        })
-        .sum();
+    let part1 = part1_aggs.iter().map(|agg| agg.1).sum();
+    let extended_operator_line = operator_line.bytes().chain(iter::repeat(b' '));
+    let mut cur_agg = Aggregator::new(false);
+    let mut part2 = 0;
+    for (maybe_value, b) in vertical_values.into_iter().zip(extended_operator_line) {
+        if !b.is_ascii_whitespace() {
+            part2 += cur_agg.1;
+            cur_agg = Aggregator::new(b == b'*');
+        }
+        if let Some(value) = maybe_value {
+            cur_agg.push(value);
+        }
+    }
+    part2 += cur_agg.1;
 
     Ok((part1, part2))
+}
+
+#[derive(Debug, Clone, Copy)]
+struct Aggregator(bool, u64);
+
+impl Aggregator {
+    fn new(is_mul: bool) -> Self {
+        Self(is_mul, u64::from(is_mul))
+    }
+
+    fn push(&mut self, value: u64) {
+        if self.0 {
+            self.1 *= value;
+        } else {
+            self.1 += value;
+        }
+    }
 }
 
 #[cfg(test)]
