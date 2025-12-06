@@ -6,6 +6,7 @@ use std::{fs, str::FromStr, time::SystemTime};
 
 use anyhow::{Context, Error, Result, bail};
 use clap::Parser;
+use indicatif::ProgressBar;
 use jiff::{
     Zoned,
     tz::{Offset, TimeZone},
@@ -15,6 +16,7 @@ use mitsein::{iter1::IteratorExt, vec1::Vec1};
 use crate::{
     Day, PuzzleId, Year,
     solutions::{PuzzleSolutions, Solutions},
+    style::progress_style,
 };
 
 #[derive(Parser)]
@@ -169,4 +171,21 @@ fn most_recently_edited_puzzle() -> Result<(PuzzleId, &'static PuzzleSolutions)>
 
 fn file_modified_time(path: &str) -> Result<SystemTime> {
     Ok(fs::metadata(path)?.modified()?)
+}
+
+fn init_progress_bar(puzzles: &[(PuzzleId, &PuzzleSolutions)], alts: bool) -> ProgressBar {
+    let total = if alts {
+        puzzles
+            .iter()
+            .map(|(_, solutions)| 1 + solutions.alts.len())
+            .sum()
+    } else {
+        puzzles.len()
+    };
+    let progress_bar = ProgressBar::new(total as u64).with_style(progress_style());
+
+    // Immediately print with the bar with zero progress
+    progress_bar.tick();
+
+    progress_bar
 }

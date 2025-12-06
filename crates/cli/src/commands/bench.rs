@@ -4,18 +4,18 @@ use std::{
 };
 
 use anyhow::{Result, ensure};
-use indicatif::{ProgressBar, ProgressIterator};
-use itertools::{Itertools, chain};
+use indicatif::ProgressIterator;
+use itertools::Itertools;
 use jiff::SignedDuration;
 use mitsein::vec1::Vec1;
 use register::SolutionFunction;
 
 use crate::{
     PuzzleId,
-    commands::MultiPuzzleArgs,
+    commands::{MultiPuzzleArgs, init_progress_bar},
     inputs,
     solutions::PuzzleSolutions,
-    style::{highlighted, print_runtime_bar, progress_style},
+    style::{AOC_STAR, DIM, HIGHLIGHT, print_runtime_bar},
 };
 
 #[derive(clap::Args)]
@@ -46,37 +46,40 @@ pub(crate) fn run(args: &Args) -> Result<()> {
 }
 
 fn run_normal(puzzles: &[(PuzzleId, &PuzzleSolutions)], args: &Args) -> Result<()> {
-    let targets: Vec<_> = puzzles
-        .iter()
-        .flat_map(|&(puzzle_id, solutions)| {
-            let main = (puzzle_id, None, solutions.main);
-            let alts = solutions
-                .alts
-                .iter()
-                .filter(|_| args.alts)
-                .map(move |(name, solution)| (puzzle_id, Some(name), *solution));
-            chain!([main], alts)
-        })
-        .collect();
-    let progress_bar = ProgressBar::new(targets.len() as u64).with_style(progress_style());
-    progress_bar.tick();
-    for (puzzle_id, alt_name, solution) in targets {
-        let time = benchmark(puzzle_id, solution, args.time)?;
-        let result_message = if let Some(name) = alt_name {
-            format!("{time:>17.2?} ({name})")
-        } else {
-            format!("{} {:>8.2?}", highlighted(format!("{puzzle_id}:")), time)
-        };
+    let progress_bar = init_progress_bar(puzzles, args.alts);
+    for &(puzzle_id, solutions) in puzzles {
+        let main_time = benchmark(puzzle_id, solutions.main, args.time)?;
+        let message = format!(
+            "{AOC_STAR} {} {main_time:>8.2?}",
+            HIGHLIGHT.apply_to(puzzle_id),
+        );
         progress_bar.inc(1);
-        progress_bar.println(result_message);
+        progress_bar.println(message);
+
+        if args.alts {
+            for (alt_name, alt_solution) in &solutions.alts {
+                let alt_time = benchmark(puzzle_id, *alt_solution, args.time)?;
+                let factor = alt_time.as_secs_f64() / main_time.as_secs_f64();
+                let digits = if factor >= 100.0 {
+                    0
+                } else if factor >= 10.0 {
+                    1
+                } else {
+                    2
+                };
+                let paren_info = format!("({alt_name}, {factor:.digits$}x slower)");
+                let message = format!("{alt_time:>18.2?} {}", DIM.apply_to(paren_info));
+                progress_bar.inc(1);
+                progress_bar.println(message);
+            }
+        }
     }
 
     Ok(())
 }
 
 fn run_bars(puzzles: &[(PuzzleId, &PuzzleSolutions)], min_time: Duration) -> Result<()> {
-    let progress_bar = ProgressBar::new(puzzles.len() as u64).with_style(progress_style());
-    progress_bar.tick(); // Immediately print with the bar with zero progress
+    let progress_bar = init_progress_bar(puzzles, false);
     let mut benchmarked: Vec<_> = puzzles
         .iter()
         .map(|&(puzzle_id, solutions)| {
@@ -86,14 +89,14 @@ fn run_bars(puzzles: &[(PuzzleId, &PuzzleSolutions)], min_time: Duration) -> Res
         .try_collect()?;
     benchmarked.sort_unstable_by_key(|&(_, time)| Reverse(time));
 
-    let (total_runtime, max_runtime) = benchmarked.iter().fold(
+    let (total, max) = benchmarked.iter().fold(
         (Duration::ZERO, Duration::ZERO),
         |(total, max), &(_, time)| (total + time, max.max(time)),
     );
-    println!("{} {:.2?}", highlighted("Total runtime:"), total_runtime);
-    println!("{}:", highlighted("Solutions (slowest to fastest)"));
+    println!("{} {total:.2?}", HIGHLIGHT.apply_to("Total runtime:"));
+    println!("{}", HIGHLIGHT.apply_to("Solutions (slowest to fastest):"));
     for (puzzle_id, time) in benchmarked {
-        print_runtime_bar(puzzle_id, time, max_runtime);
+        print_runtime_bar(puzzle_id, time, max);
     }
 
     Ok(())

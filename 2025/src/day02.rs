@@ -75,10 +75,21 @@ fn parse(input: &str) -> impl Iterator<Item = (u64, u64)> + '_ {
 
 #[register]
 fn every_number(input: &str) -> (u64, u64) {
+    solve_with_predicates(input, is_silly, is_silly2)
+}
+
+#[register]
+fn every_number_string(input: &str) -> (u64, u64) {
+    solve_with_predicates(input, is_silly_string, is_silly2_string)
+}
+
+fn solve_with_predicates(input: &str, p1: fn(u64) -> bool, p2: fn(u64) -> bool) -> (u64, u64) {
     parse(input)
         .flat_map(|(l, r)| l..=r)
-        .fold((0_u64, 0_u64), |(p1, p2), x| {
-            (p1 + u64::from(is_silly(x)), p2 + u64::from(is_silly2(x)))
+        .fold((0_u64, 0_u64), |(sum1, sum2), x| {
+            let sum1 = sum1 + if p1(x) { x } else { 0 };
+            let sum2 = sum2 + if p2(x) { x } else { 0 };
+            (sum1, sum2)
         })
 }
 
@@ -96,18 +107,6 @@ fn is_silly2(x: u64) -> bool {
         let first = x % ten_pow;
         (1..i).all(|j| first == (x / TEN_POW[j * w]) % ten_pow)
     })
-}
-
-#[register]
-fn every_number_string(input: &str) -> (u64, u64) {
-    parse(input)
-        .flat_map(|(l, r)| l..=r)
-        .fold((0_u64, 0_u64), |(p1, p2), x| {
-            (
-                p1 + u64::from(is_silly_string(x)),
-                p2 + u64::from(is_silly2_string(x)),
-            )
-        })
 }
 
 fn is_silly_string(x: u64) -> bool {
