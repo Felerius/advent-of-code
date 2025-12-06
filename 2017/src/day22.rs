@@ -1,39 +1,41 @@
+use ndarray::Array2;
 use register::register;
-use utils::{grid, hash::FastHashMap};
+use utils::{
+    grid,
+    hash::{FastHashCollectionExt, FastHashMap},
+};
 
 #[register]
 fn run(input: &str) -> (usize, usize) {
-    let grid = grid::from_lines(input);
-    let start = (grid.nrows() as isize / 2, grid.ncols() as isize / 2);
-    let (cells1, cells2) = grid
-        .indexed_iter()
-        .map(|((y, x), &c)| {
-            let pos = (y as isize, x as isize);
-            let (state1, state2) = if c == b'#' {
-                (State1::Infected, State2::Infected)
-            } else {
-                (State1::Clean, State2::Clean)
-            };
-            ((pos, state1), (pos, state2))
-        })
-        .unzip();
-
-    let part1 = simulate(cells1, start, 10_000);
-    let part2 = simulate(cells2, start, 10_000_000);
-
+    let buffer = 200;
+    let (height, width) = grid::from_lines(input).dim();
+    let cells1 = Array2::from_elem((height + 2 * buffer, width + 2 * buffer), State1::default());
+    let cells2 = Array2::from_elem((height + 2 * buffer, width + 2 * buffer), State2::default());
+    let part1 = simulate::<State1>(input, cells1, buffer, 10_000);
+    let part2 = simulate::<State2>(input, cells2, buffer, 10_000_000);
     (part1, part2)
 }
 
-fn simulate<S: State>(
-    mut cells: FastHashMap<(isize, isize), S>,
-    mut pos: (isize, isize),
-    bursts: usize,
-) -> usize {
+#[register]
+fn no_guessed_limits(input: &str) -> (usize, usize) {
+    let offset = usize::MAX / 2;
+    let part1 = simulate::<State1>(input, FastHashMap::new(), offset, 10_000);
+    let part2 = simulate::<State2>(input, FastHashMap::new(), offset, 10_000_000);
+    (part1, part2)
+}
+
+fn simulate<S: State>(input: &str, mut cells: impl Grid<S>, offset: usize, bursts: usize) -> usize {
+    let grid = grid::from_lines(input);
+    for ((y, x), &c) in grid.indexed_iter() {
+        let cell = cells.get_mut((y + offset, x + offset));
+        *cell = if c == b'#' { S::INFECTED } else { S::default() };
+    }
+
+    let mut pos = (grid.nrows() / 2 + offset, grid.ncols() / 2 + offset);
     let mut dir = Direction::Up;
     let mut infections = 0;
-
     for _ in 0..bursts {
-        let state = cells.entry(pos).or_default();
+        let state = cells.get_mut(pos);
         dir = state.turn(dir);
         *state = state.next();
         infections += usize::from(*state == S::INFECTED);
@@ -41,6 +43,22 @@ fn simulate<S: State>(
     }
 
     infections
+}
+
+trait Grid<T> {
+    fn get_mut(&mut self, pos: (usize, usize)) -> &mut T;
+}
+
+impl<T> Grid<T> for Array2<T> {
+    fn get_mut(&mut self, pos: (usize, usize)) -> &mut T {
+        &mut self[pos]
+    }
+}
+
+impl<T: Default> Grid<T> for FastHashMap<(usize, usize), T> {
+    fn get_mut(&mut self, pos: (usize, usize)) -> &mut T {
+        self.entry(pos).or_default()
+    }
 }
 
 trait State: Copy + Default + Eq {
@@ -132,7 +150,7 @@ impl Direction {
         self.turn_left().turn_left().turn_left()
     }
 
-    fn apply(self, (y, x): (isize, isize)) -> (isize, isize) {
+    fn apply(self, (y, x): (usize, usize)) -> (usize, usize) {
         match self {
             Self::Up => (y - 1, x),
             Self::Right => (y, x + 1),
