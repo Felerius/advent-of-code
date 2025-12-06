@@ -1,4 +1,3 @@
-#![allow(dead_code, reason = "alternative implementation")]
 use std::{
     collections::VecDeque,
     mem,
@@ -8,8 +7,10 @@ use std::{
 
 use anyhow::{Context, Error, Result, bail, ensure};
 use itertools::Itertools;
+use register::register;
 
-pub(crate) fn run(input: &str) -> Result<(Integer, usize)> {
+#[register]
+fn run(input: &str) -> Result<(Integer, usize)> {
     let program: Vec<Operation> = input.lines().map(str::parse).try_collect()?;
 
     let mut vm = VirtualMachine::new(&program);

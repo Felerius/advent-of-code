@@ -7,6 +7,20 @@ use utils::input::Input;
 
 #[register]
 fn run(input: &str) -> Result<(usize, usize)> {
+    run_inner(input, part2_remainders_list)
+}
+
+#[register]
+fn dijkstra(input: &str) -> Result<(usize, usize)> {
+    run_inner(input, part2_dijkstra)
+}
+
+#[register]
+fn brute_force(input: &str) -> Result<(usize, usize)> {
+    run_inner(input, part2_brute_force)
+}
+
+fn run_inner(input: &str, part2: fn(&[[usize; 2]]) -> usize) -> Result<(usize, usize)> {
     let mut layers: Vec<_> = input
         .lines()
         .map(Input::unsigned_integers_n::<usize, 2>)
@@ -18,10 +32,7 @@ fn run(input: &str) -> Result<(usize, usize)> {
         .filter(|[depth, range]| depth % (2 * range - 2) == 0)
         .map(|[depth, range]| depth * range)
         .sum();
-
-    // let part2 = part2_brute_force(&layers);
-    // let part2 = part2_dijkstra(&layers);
-    let part2 = part2_remainders_list(&layers);
+    let part2 = part2(&layers);
 
     Ok((part1, part2))
 }
@@ -52,7 +63,6 @@ fn part2_remainders_list(layers: &[[usize; 2]]) -> usize {
     current[0]
 }
 
-#[allow(dead_code, reason = "alternative solution")]
 fn part2_dijkstra(layers: &[[usize; 2]]) -> usize {
     let mut lcm = 1;
     let precalc: Vec<_> = layers
@@ -84,7 +94,6 @@ fn part2_dijkstra(layers: &[[usize; 2]]) -> usize {
     unreachable!("no solution found")
 }
 
-#[allow(dead_code, reason = "alternative solution")]
 fn part2_brute_force(layers: &[[usize; 2]]) -> usize {
     #[expect(clippy::maybe_infinite_iter)]
     (0..)
@@ -109,5 +118,7 @@ mod tests {
     #[test]
     fn test_name() {
         assert_eq!(run(INPUT).unwrap(), (24, 10));
+        assert_eq!(dijkstra(INPUT).unwrap(), (24, 10));
+        assert_eq!(brute_force(INPUT).unwrap(), (24, 10));
     }
 }

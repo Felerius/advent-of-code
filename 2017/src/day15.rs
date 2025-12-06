@@ -2,7 +2,7 @@ use std::{
     array, iter,
     sync::{
         atomic::{AtomicUsize, Ordering},
-        mpsc::{self, Receiver, Sender},
+        mpsc::{self, Receiver},
     },
     thread,
 };
@@ -22,10 +22,20 @@ const NUM_CHUNKS: usize = N1.checked_div(CHUNK_SIZE).unwrap();
 #[register]
 fn run(input: &str) -> Result<(usize, usize)> {
     let [x, y] = input.unsigned_integers_n()?;
-    Ok(parallel(x, y))
+    Ok(parallel(x, y, compute_chunk_auto_vec))
 }
 
-fn parallel(x: u64, y: u64) -> (usize, usize) {
+#[register]
+fn no_auto_vectorization(input: &str) -> Result<(usize, usize)> {
+    let [x, y] = input.unsigned_integers_n()?;
+    Ok(parallel(x, y, compute_chunk_loop))
+}
+
+fn parallel(
+    x: u64,
+    y: u64,
+    compute_chunk: impl Fn(u64, u64, usize) -> ChunkResult + Send + Sync + Copy,
+) -> (usize, usize) {
     // The generated sequence is $x_{n + 1} = x_n * f \mod M$. Thus, in
     // general, $x_{n + m} = x_n * f^m \mod M$. This means we can jump ahead in
     // the sequence and generate different parts in parallel.
@@ -40,27 +50,24 @@ fn parallel(x: u64, y: u64) -> (usize, usize) {
         for _ in 0..num_cpus::get() - 1 {
             let tx = tx.clone();
             let next_chunk = &next_chunk;
-            scope.spawn(move || producer(x, y, next_chunk, &tx));
+            scope.spawn(move || {
+                loop {
+                    let chunk_index = next_chunk.fetch_add(1, Ordering::SeqCst);
+                    if chunk_index >= NUM_CHUNKS {
+                        break;
+                    }
+
+                    let result = compute_chunk(x, y, chunk_index);
+                    tx.send((chunk_index, result)).unwrap();
+                }
+            });
         }
+
         drop(tx);
         consumer(x, y, &rx)
     })
 }
 
-fn producer(x0: u64, y0: u64, next_chunk: &AtomicUsize, tx: &Sender<(usize, ChunkResult)>) {
-    loop {
-        let chunk_index = next_chunk.fetch_add(1, Ordering::SeqCst);
-        if chunk_index >= NUM_CHUNKS {
-            break;
-        }
-
-        // let result = compute_chunk_loop(x0, y0, chunk_index);
-        let result = compute_chunk_auto_vec(x0, y0, chunk_index);
-        tx.send((chunk_index, result)).unwrap();
-    }
-}
-
-#[allow(dead_code, reason = "alternative solution")]
 fn compute_chunk_loop(x0: u64, y0: u64, chunk_index: usize) -> ChunkResult {
     let mut gen1 = Vec::with_capacity(CHUNK_SIZE / 4);
     let mut gen2 = Vec::with_capacity(CHUNK_SIZE / 8);
@@ -225,8 +232,9 @@ const fn mod_pow(mut b: u64, mut e: usize) -> u64 {
     r
 }
 
-#[allow(dead_code, reason = "alternative solution")]
-fn brute(x: u64, y: u64) -> (usize, usize) {
+#[register]
+fn brute_force(input: &str) -> Result<(usize, usize)> {
+    let [x, y] = input.unsigned_integers_n()?;
     let gen1 = generate::<F1>(x, 0);
     let gen2 = generate::<F2>(y, 0);
     let part1 = gen1
@@ -243,7 +251,7 @@ fn brute(x: u64, y: u64) -> (usize, usize) {
         .filter(|(a, b)| (a & 0xFFFF) == (b & 0xFFFF))
         .count();
 
-    (part1, part2)
+    Ok((part1, part2))
 }
 
 #[cfg(test)]

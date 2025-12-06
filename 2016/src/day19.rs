@@ -16,7 +16,12 @@ fn run(input: &str) -> Result<(usize, usize)> {
     Ok((part1, part2))
 }
 
-#[allow(dead_code)]
+#[register]
+fn simulated(input: &str) -> Result<(usize, usize)> {
+    let n: usize = input.parse()?;
+    Ok((simulate_part1(n), simulate_part2(n)))
+}
+
 fn simulate_part1(n: usize) -> usize {
     let mut queue: VecDeque<_> = (1..=n).collect();
     while let Some(x) = queue.pop_front() {
@@ -29,7 +34,6 @@ fn simulate_part1(n: usize) -> usize {
     unreachable!()
 }
 
-#[allow(dead_code)]
 fn simulate_part2(n: usize) -> usize {
     let middle = n / 2 + 1;
     let mut front: VecDeque<_> = (1..middle).collect();
@@ -52,5 +56,6 @@ mod tests {
     #[test]
     fn test() {
         assert_eq!(run("5").unwrap().0, 3);
+        assert_eq!(simulated("5").unwrap().0, 3);
     }
 }

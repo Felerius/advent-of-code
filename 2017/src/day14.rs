@@ -7,10 +7,16 @@ use crate::knot_hash;
 
 #[register]
 fn run(input: &str) -> (usize, usize) {
-    let input = input.trim();
-    let mut grid = compute_grid_rayon(input);
-    let part1 = grid.iter().flatten().filter(|&&b| b).count();
+    solve_grid(compute_grid_rayon(input.trim()))
+}
 
+#[register]
+fn single_threaded(input: &str) -> (usize, usize) {
+    solve_grid(compute_grid_single_threaded(input.trim()))
+}
+
+fn solve_grid(mut grid: [[bool; 128]; 128]) -> (usize, usize) {
+    let part1 = grid.iter().flatten().filter(|&&b| b).count();
     let mut queue = VecDeque::with_capacity(128 * 128);
     let mut part2 = 0;
     for (x0, y0) in itertools::iproduct!(0..128, 0..128) {
@@ -49,7 +55,6 @@ fn compute_grid_rayon(input: &str) -> [[bool; 128]; 128] {
     grid
 }
 
-#[allow(dead_code, reason = "alternative solution")]
 fn compute_grid_single_threaded(input: &str) -> [[bool; 128]; 128] {
     array::from_fn(|i| {
         let num = knot_hash::hash_str(&format!("{input}-{i}"));
@@ -64,5 +69,6 @@ mod tests {
     #[test]
     fn test() {
         assert_eq!(run("flqrgnkx"), (8108, 1242));
+        assert_eq!(single_threaded("flqrgnkx"), (8108, 1242));
     }
 }

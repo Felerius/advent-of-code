@@ -9,6 +9,18 @@ use utils::{
 
 #[register]
 fn run(input: &str) -> Result<(usize, usize)> {
+    run_inner(input, part2)
+}
+
+#[register]
+fn proper_solution(input: &str) -> Result<(usize, usize)> {
+    run_inner(input, part2_proper)
+}
+
+fn run_inner(
+    input: &str,
+    part2: fn(&[(Coordinate, Coordinate, Coordinate)]) -> usize,
+) -> Result<(usize, usize)> {
     let particles: Vec<_> = input
         .lines()
         .map(|line| {
@@ -29,6 +41,10 @@ fn run(input: &str) -> Result<(usize, usize)> {
         })
         .unwrap();
 
+    Ok((part1, part2(&particles)))
+}
+
+fn part2(particles: &[(Coordinate, Coordinate, Coordinate)]) -> usize {
     // The inputs are constructed so that any collisions happen within the first
     // 40 ticks, unfortunately making any interesting solutions obsolete.
     let mut collisions = FastHashMap::with_capacity(particles.len());
@@ -45,12 +61,9 @@ fn run(input: &str) -> Result<(usize, usize)> {
             }
         }
     }
-    let part2 = removed.iter().filter(|&&r| r == -1).count();
-
-    Ok((part1, part2))
+    removed.iter().filter(|&&r| r == -1).count()
 }
 
-#[allow(dead_code, reason = "alternative implementation")]
 fn part2_proper(particles: &[(Coordinate, Coordinate, Coordinate)]) -> usize {
     // The position of a particle at time t is given by:
     //

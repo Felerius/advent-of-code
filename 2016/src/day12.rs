@@ -39,8 +39,8 @@ fn run(input: &str) -> Result<(u32, u32)> {
     Ok((part1, a + factor1 * factor2))
 }
 
-#[allow(dead_code)]
-fn run_interpreted(input: &str) -> Result<(u32, u32)> {
+#[register]
+fn interpreted(input: &str) -> Result<(u32, u32)> {
     let program: Vec<_> = input.lines().map(str::parse).try_collect()?;
 
     let mut vm = VirtualMachine::<4>::new();
