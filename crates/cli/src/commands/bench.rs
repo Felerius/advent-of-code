@@ -121,15 +121,15 @@ fn benchmark(
     }
 
     let count = runs.len().get();
-    let (_, &mut lower_median, tail) = runs.select_nth_unstable(count / 2);
+    let (small, &mut upper_median, _) = runs.select_nth_unstable(count / 2);
     let median = if count.is_multiple_of(2) {
-        let upper_median = *tail
+        let lower_median = *small
             .iter()
             .min()
             .expect("we are guaranteed to have at least two elements");
         (lower_median + upper_median) / 2
     } else {
-        lower_median
+        upper_median
     };
 
     Ok(median)
