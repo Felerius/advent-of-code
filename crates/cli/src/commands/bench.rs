@@ -5,7 +5,7 @@ use std::{
 
 use anyhow::{Result, ensure};
 use indicatif::{ProgressBar, ProgressIterator};
-use itertools::Itertools;
+use itertools::{Itertools, chain};
 use jiff::SignedDuration;
 use mitsein::vec1::Vec1;
 use register::SolutionFunction;
@@ -15,7 +15,7 @@ use crate::{
     commands::MultiPuzzleArgs,
     inputs,
     solutions::PuzzleSolutions,
-    style::{self, highlighted, print_runtime_bar, progress_style, spinner},
+    style::{highlighted, print_runtime_bar, progress_style},
 };
 
 #[derive(clap::Args)]
@@ -36,38 +36,45 @@ pub(crate) struct Args {
     alts: bool,
 }
 
-fn parse_bench_time(s: &str) -> Result<Duration> {
-    let duration: SignedDuration = s.parse()?;
-    ensure!(duration.is_positive(), "must be positive");
-    Ok(duration.unsigned_abs())
-}
-
 pub(crate) fn run(args: &Args) -> Result<()> {
     let puzzles = args.puzzles.evaluate()?;
     if args.bar {
-        return benchmark_bars(&puzzles, args.time);
+        run_bars(&puzzles, args.time)
+    } else {
+        run_normal(&puzzles, args)
     }
+}
 
-    for &(puzzle_id, solutions) in &puzzles {
-        let spinner = spinner(puzzle_id.to_string(), 0);
-        let time = benchmark(puzzle_id, solutions.main, args.time)?;
-        spinner.finish_and_clear();
-        println!("{}: {:>8.2?}", highlighted(puzzle_id), time);
-
-        if args.alts {
-            for (name, solution) in &solutions.alts {
-                let spinner = style::spinner(name, 2);
-                let time = benchmark(puzzle_id, *solution, args.time)?;
-                spinner.finish_and_clear();
-                println!("  {}: {:>8.2?}", highlighted(name), time);
-            }
-        }
+fn run_normal(puzzles: &[(PuzzleId, &PuzzleSolutions)], args: &Args) -> Result<()> {
+    let targets: Vec<_> = puzzles
+        .iter()
+        .flat_map(|&(puzzle_id, solutions)| {
+            let main = (puzzle_id, None, solutions.main);
+            let alts = solutions
+                .alts
+                .iter()
+                .filter(|_| args.alts)
+                .map(move |(name, solution)| (puzzle_id, Some(name), *solution));
+            chain!([main], alts)
+        })
+        .collect();
+    let progress_bar = ProgressBar::new(targets.len() as u64).with_style(progress_style());
+    progress_bar.tick();
+    for (puzzle_id, alt_name, solution) in targets {
+        let time = benchmark(puzzle_id, solution, args.time)?;
+        let result_message = if let Some(name) = alt_name {
+            format!("{time:>17.2?} ({name})")
+        } else {
+            format!("{} {:>8.2?}", highlighted(format!("{puzzle_id}:")), time)
+        };
+        progress_bar.inc(1);
+        progress_bar.println(result_message);
     }
 
     Ok(())
 }
 
-fn benchmark_bars(puzzles: &[(PuzzleId, &PuzzleSolutions)], min_time: Duration) -> Result<()> {
+fn run_bars(puzzles: &[(PuzzleId, &PuzzleSolutions)], min_time: Duration) -> Result<()> {
     let progress_bar = ProgressBar::new(puzzles.len() as u64).with_style(progress_style());
     progress_bar.tick(); // Immediately print with the bar with zero progress
     let mut benchmarked: Vec<_> = puzzles
@@ -123,4 +130,10 @@ fn benchmark(
     };
 
     Ok(median)
+}
+
+fn parse_bench_time(s: &str) -> Result<Duration> {
+    let duration: SignedDuration = s.parse()?;
+    ensure!(duration.is_positive(), "must be positive");
+    Ok(duration.unsigned_abs())
 }
