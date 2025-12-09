@@ -9,6 +9,7 @@ arrayvec = { workspace = true }
 const-array-init = { workspace = true }
 itertools = { workspace = true }
 ndarray = { workspace = true }
+num_cpus = { workspace = true }
 rayon = { workspace = true }
 
 register = { workspace = true }

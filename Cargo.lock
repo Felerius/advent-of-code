@@ -125,6 +125,7 @@ dependencies = [
  "const-array-init",
  "itertools",
  "ndarray",
+ "num_cpus",
  "rayon",
  "register",
  "utils",
